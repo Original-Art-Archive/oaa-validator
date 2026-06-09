@@ -1,0 +1,148 @@
+{
+  "schema_version": "0.1",
+  "id": "OAA-00002",
+  "title": "Little Nemo in Slumberland",
+  "public_metadata": {
+    "description": "Library of Congress example record containing three digitized original drawing files for one artwork record.",
+    "for_sale_status": null,
+    "media": "India ink over graphite and blue pencil",
+    "artwork_type": "Comic strip panels",
+    "publication_status": "published_art",
+    "is_public": true,
+    "artist_credits": [
+      {
+        "display_name": "Winsor McCay",
+        "first_name": "Winsor",
+        "last_name": "McCay",
+        "role": "Artist",
+        "extensions": {}
+      }
+    ],
+    "extensions": {}
+  },
+  "private_metadata": {
+    "extensions": {}
+  },
+  "files": [
+    {
+      "id": "file-ppmsca-05788",
+      "file_name": "ppmsca-05788-panel-1.jpg",
+      "relative_path": "ppmsca-05788-panel-1.jpg",
+      "file_kind": "raw",
+      "size_bytes": 208763,
+      "width": 1024,
+      "height": 679,
+      "format": "JPEG",
+      "media_type": "image/jpeg",
+      "is_primary": true,
+      "image_role": "raw_scan",
+      "extensions": {},
+      "external_links": [
+        {
+          "provider": "gov.loc",
+          "id": "LC-DIG-ppmsca-05788",
+          "url": "http://hdl.loc.gov/loc.pnp/ppmsca.05788",
+          "label": "digital file from original drawing, panel 1",
+          "extensions": {
+            "gov.loc": {
+              "reproduction_number": "LC-DIG-ppmsca-05788",
+              "handle": "http://hdl.loc.gov/loc.pnp/ppmsca.05788",
+              "source_image_url": "https://tile.loc.gov/storage-services/service/pnp/ppmsca/05700/05788v.jpg",
+              "master_image_url": "https://tile.loc.gov/storage-services/master/pnp/ppmsca/05700/05788u.tif",
+              "label": "digital file from original drawing, panel 1"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "file-ppmsca-05789",
+      "file_name": "ppmsca-05789-panel-2.jpg",
+      "relative_path": "ppmsca-05789-panel-2.jpg",
+      "file_kind": "raw",
+      "size_bytes": 181817,
+      "width": 1024,
+      "height": 671,
+      "format": "JPEG",
+      "media_type": "image/jpeg",
+      "is_primary": false,
+      "image_role": "raw_scan",
+      "extensions": {},
+      "external_links": [
+        {
+          "provider": "gov.loc",
+          "id": "LC-DIG-ppmsca-05789",
+          "url": "http://hdl.loc.gov/loc.pnp/ppmsca.05789",
+          "label": "digital file from original drawing, panel 2",
+          "extensions": {
+            "gov.loc": {
+              "reproduction_number": "LC-DIG-ppmsca-05789",
+              "handle": "http://hdl.loc.gov/loc.pnp/ppmsca.05789",
+              "source_image_url": "https://tile.loc.gov/storage-services/service/pnp/ppmsca/05700/05789v.jpg",
+              "master_image_url": "https://tile.loc.gov/storage-services/master/pnp/ppmsca/05700/05789u.tif",
+              "label": "digital file from original drawing, panel 2"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "file-ppmsca-05790",
+      "file_name": "ppmsca-05790-panels-8-9.jpg",
+      "relative_path": "ppmsca-05790-panels-8-9.jpg",
+      "file_kind": "raw",
+      "size_bytes": 190361,
+      "width": 1024,
+      "height": 675,
+      "format": "JPEG",
+      "media_type": "image/jpeg",
+      "is_primary": false,
+      "image_role": "raw_scan",
+      "extensions": {},
+      "external_links": [
+        {
+          "provider": "gov.loc",
+          "id": "LC-DIG-ppmsca-05790",
+          "url": "http://hdl.loc.gov/loc.pnp/ppmsca.05790",
+          "label": "digital file from original drawing, panels 8-9",
+          "extensions": {
+            "gov.loc": {
+              "reproduction_number": "LC-DIG-ppmsca-05790",
+              "handle": "http://hdl.loc.gov/loc.pnp/ppmsca.05790",
+              "source_image_url": "https://tile.loc.gov/storage-services/service/pnp/ppmsca/05700/05790v.jpg",
+              "master_image_url": "https://tile.loc.gov/storage-services/master/pnp/ppmsca/05700/05790u.tif",
+              "label": "digital file from original drawing, panels 8-9"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "extensions": {},
+  "external_links": [
+    {
+      "provider": "gov.loc",
+      "id": "2004672673",
+      "url": "https://www.loc.gov/pictures/item/2004672673/",
+      "label": "Little Nemo in Slumberland. I'm going home and leave you fellows, if you don't go soon!",
+      "extensions": {
+        "gov.loc": {
+          "item_id": "2004672673",
+          "item_url": "https://www.loc.gov/pictures/item/2004672673/",
+          "title": "Little Nemo in Slumberland. I'm going home and leave you fellows, if you don't go soon!",
+          "creator": "Winsor McCay",
+          "date_created_published": "[ca. 1910]",
+          "repository": "Library of Congress Prints and Photographs Division",
+          "rights_advisory": "No known restrictions on publication.",
+          "call_number": "Unprocessed PR 13 CN 2001:055-4 [item] [P&P]",
+          "medium": "3 drawings on bristol board : India ink over graphite and blue pencil underdrawing.",
+          "reproduction_numbers": [
+            "LC-DIG-ppmsca-05788",
+            "LC-DIG-ppmsca-05789",
+            "LC-DIG-ppmsca-05790"
+          ]
+        }
+      }
+    }
+  ]
+}

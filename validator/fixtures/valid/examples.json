@@ -1,0 +1,112 @@
+{
+  "fixtures": [
+    {
+      "id": "valid-minimal-directory",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "expected_valid": true,
+      "covers_requirements": [
+        "OAA-PKG-010",
+        "OAA-PKG-011",
+        "OAA-COL-001",
+        "OAA-GAL-001",
+        "OAA-ART-001",
+        "OAA-MAN-001",
+        "OAA-MAN-002",
+        "OAA-MAN-006",
+        "OAA-MAN-007",
+        "OAA-COL-010",
+        "OAA-COL-012",
+        "OAA-COL-013",
+        "OAA-GAL-010",
+        "OAA-GAL-011",
+        "OAA-GAL-012",
+        "OAA-ART-010",
+        "OAA-ART-011",
+        "OAA-FILE-010"
+      ],
+      "expected_findings": []
+    },
+    {
+      "id": "valid-full-directory",
+      "mode": "directory",
+      "source": "examples/full",
+      "expected_valid": true,
+      "covers_requirements": [
+        "OAA-LINK-001",
+        "OAA-LINK-002",
+        "OAA-LINK-003",
+        "OAA-LINK-004",
+        "OAA-LINK-005",
+        "OAA-LINK-007",
+        "OAA-PUB-001",
+        "OAA-PUB-002",
+        "OAA-FILE-001",
+        "OAA-FILE-011",
+        "OAA-FILE-012",
+        "OAA-FILE-013",
+        "OAA-FILE-014",
+        "OAA-FILE-015",
+        "OAA-FILE-016",
+        "OAA-FILE-017",
+        "OAA-FILE-018",
+        "OAA-FILE-019",
+        "OAA-EXT-001",
+        "OAA-EXT-002"
+      ],
+      "expected_findings": []
+    },
+    {
+      "id": "valid-minimal-archive",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "expected_valid": true,
+      "covers_requirements": [
+        "OAA-PKG-001",
+        "OAA-PATH-001",
+        "OAA-PATH-002",
+        "OAA-PATH-003",
+        "OAA-PATH-004",
+        "OAA-PATH-005",
+        "OAA-PATH-006",
+        "OAA-PATH-007",
+        "OAA-PATH-008",
+        "OAA-PATH-009",
+        "OAA-PATH-011",
+        "OAA-PATH-012",
+        "OAA-PKG-012",
+        "OAA-PKG-013"
+      ],
+      "expected_findings": []
+    },
+    {
+      "id": "valid-loc-multi-image-directory",
+      "mode": "directory",
+      "source": "examples/loc-multi-image",
+      "expected_valid": true,
+      "covers_requirements": [
+        "OAA-COL-014",
+        "OAA-COL-015",
+        "OAA-COL-016",
+        "OAA-COL-017",
+        "OAA-COL-018",
+        "OAA-COL-019",
+        "OAA-COL-020",
+        "OAA-COL-021",
+        "OAA-GAL-013"
+      ],
+      "expected_findings": []
+    },
+    {
+      "id": "valid-public-domain-synthetic-directory",
+      "mode": "directory",
+      "source": "examples/public-domain-synthetic",
+      "expected_valid": true,
+      "covers_requirements": [
+        "OAA-ART-012",
+        "OAA-ART-013"
+      ],
+      "expected_findings": []
+    }
+  ]
+}

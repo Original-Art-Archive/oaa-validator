@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oaa-validator"
+version = "0.1.0"
+description = "Reference validator for the Original Art Archive (OAA) Format"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE.md", "LICENSES/MIT.txt", "LICENSES/CC0-1.0.txt"]
+authors = [
+  { name = "Remgrandt Games LLC" }
+]
+keywords = ["oaa", "original-art-archive", "validator", "archive"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: File Formats",
+  "Topic :: Software Development :: Quality Assurance"
+]
+dependencies = [
+  "jsonschema>=4.22,<5"
+]
+
+[project.urls]
+Homepage = "https://github.com/Original-Art-Archive/oaa-validator"
+Repository = "https://github.com/Original-Art-Archive/oaa-validator"
+Issues = "https://github.com/Original-Art-Archive/oaa-validator/issues"
+Specification = "https://github.com/Original-Art-Archive/oaa-spec"
+
+[project.scripts]
+oaa-validator = "oaa_validator.cli:main"
+oaa-validate = "oaa_validator.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["validator"]
+include = ["oaa_validator*"]
+
+[tool.setuptools.package-data]
+oaa_validator = ["schema/*.json"]

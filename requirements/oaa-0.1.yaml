@@ -1,0 +1,1820 @@
+format_version: 1
+spec_version: '0.1'
+source_spec: ../SPEC.md
+requirements:
+- id: OAA-PKG-001
+  title: Archive is ZIP-compatible
+  type: archive
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: An OAA archive MUST be a ZIP-compatible archive container.
+  validation:
+    coverage: automated
+    rule_ids:
+    - package.archive_readable
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PKG-002
+  title: Filesystem archives use .oaa extension
+  type: archive
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: An OAA archive distributed as a filesystem file SHOULD use the `.oaa` file
+    extension.
+  validation:
+    coverage: automated
+    rule_ids:
+    - package.extension_oaa
+    severity: warning
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PKG-003
+  title: Readers do not rely on extension alone
+  type: archive
+  level: SHOULD_NOT
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Readers SHOULD NOT rely on the filename extension alone to identify OAA archives.
+  validation:
+    coverage: not_validator_scope
+    reason: This is reader identification behavior; archive readability is covered
+      by OAA-PKG-001.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-ZIP-001
+  title: Archive entries are not encrypted
+  type: archive
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: OAA archive entries MUST NOT be encrypted.
+  validation:
+    coverage: automated
+    rule_ids:
+    - package.encrypted_entries
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-ZIP-002
+  title: Writers use Store or Deflate compression
+  type: archive
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Writers SHOULD use only the Store and Deflate ZIP compression methods.
+  validation:
+    coverage: automated
+    rule_ids:
+    - package.compression_method
+    severity: warning
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-ZIP-003
+  title: Structural readers support Store and Deflate
+  type: reader
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Structural Readers MUST support Store and Deflate ZIP compression methods.
+  validation:
+    coverage: not_validator_scope
+    reason: This is structural reader capability; Store/Deflate archive emission is
+      covered by OAA-ZIP-002.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-001
+  title: Archive paths use forward slash separators
+  type: archive
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Archive entry names MUST use forward slash `/` separators.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.safe_archive_path
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-002
+  title: Archive entry names are UTF-8
+  type: archive
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Archive entry names MUST be UTF-8.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.utf8_names
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-003
+  title: Archive paths do not begin with slash
+  type: archive
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Archive entry names MUST NOT begin with `/`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.safe_archive_path
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-004
+  title: Archive paths do not contain backslashes
+  type: archive
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Archive entry names MUST NOT contain backslash `\` separators.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.safe_archive_path
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-005
+  title: Archive paths do not contain empty segments
+  type: archive
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Archive entry names MUST NOT contain empty path segments, except that the
+    empty final segment of an explicit directory entry is allowed.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.safe_archive_path
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-006
+  title: Archive paths do not contain dot segments
+  type: archive
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Archive entry names MUST NOT contain `.` segments.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.safe_archive_path
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-007
+  title: Archive paths do not contain parent traversal
+  type: archive
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Archive entry names MUST NOT contain `..` segments.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.safe_archive_path
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-008
+  title: Explicit directory entries are ignored
+  type: archive
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Readers MUST ignore explicit directory entries when interpreting archive structure.
+  validation:
+    coverage: not_validator_scope
+    reason: Reader interpretation behavior; explicit directory entries are not
+      invalid archive data by themselves.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-009
+  title: Archive path comparisons are case-sensitive
+  type: archive
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Readers MUST treat path comparisons as case-sensitive inside the archive.
+  validation:
+    coverage: not_validator_scope
+    reason: Reader path resolution behavior; the validator can use case-sensitive
+      comparisons internally but cannot emit a finding for a valid archive merely
+      demonstrating that behavior.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-010
+  title: Writer-generated paths are NFC
+  type: archive
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Writers SHOULD emit archive paths in Unicode Normalization Form C (NFC).
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.nfc
+    severity: warning
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-011
+  title: Readers validate paths before normalization
+  type: archive
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: Readers MUST NOT normalize paths before safety validation.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.safe_archive_path
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PATH-012
+  title: Archive duplicate entries are rejected
+  type: archive
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Archive Container
+    anchor: archive-container
+  text: A valid OAA archive MUST NOT contain duplicate archive entries with the same
+    path.
+  validation:
+    coverage: automated
+    rule_ids:
+    - package.duplicate_entries
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PKG-010
+  title: Root mimetype file is present
+  type: archive
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Required Files
+    anchor: required-files
+  text: An OAA archive MUST contain a `mimetype` file at the archive root.
+  validation:
+    coverage: automated
+    rule_ids:
+    - package.mimetype_present
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PKG-011
+  title: Root mimetype has required value
+  type: archive
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Required Files
+    anchor: required-files
+  text: The `mimetype` file MUST contain exactly `application/vnd.original-art-archive+zip`,
+    with no leading or trailing whitespace.
+  validation:
+    coverage: automated
+    rule_ids:
+    - package.mimetype_value
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PKG-012
+  title: Mimetype is first ZIP entry
+  type: archive
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Required Files
+    anchor: required-files
+  text: Writers SHOULD place `mimetype` as the first ZIP entry.
+  validation:
+    coverage: automated
+    rule_ids:
+    - package.mimetype_first
+    severity: warning
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PKG-013
+  title: Mimetype is stored without compression
+  type: archive
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Required Files
+    anchor: required-files
+  text: Writers SHOULD store `mimetype` without compression.
+  validation:
+    coverage: automated
+    rule_ids:
+    - package.mimetype_stored
+    severity: warning
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-001
+  title: Root collection manifest is present
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Required Files
+    anchor: required-files
+  text: 'An OAA archive MUST contain one collection manifest at the archive root:
+    `.oacollection`.'
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.manifest_present
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-GAL-001
+  title: Referenced gallery manifests are present
+  type: gallery
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Required Files
+    anchor: required-files
+  text: Each gallery directory referenced by the collection manifest MUST contain
+    one gallery manifest.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.gallery_manifest_present
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-ART-001
+  title: Referenced artwork manifests are present
+  type: artwork
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Required Files
+    anchor: required-files
+  text: Each artwork directory referenced by the collection manifest MUST contain
+    one artwork manifest.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.artwork_manifest_present
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-GAL-002
+  title: Gallery manifests reference artworks by ID
+  type: gallery
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Directory Layout
+    anchor: directory-layout
+  text: Gallery manifests describe gallery membership. They MUST reference artworks
+    by archive-local artwork ID.
+  validation:
+    coverage: automated
+    rule_ids:
+    - gallery.artwork_refs_resolve
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-GAL-003
+  title: Gallery manifests do not duplicate artwork metadata
+  type: gallery
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Directory Layout
+    anchor: directory-layout
+  text: Gallery manifests MUST NOT duplicate mutable artwork metadata such as title,
+    provider IDs, artist credits, media, private metadata, or file lists.
+  validation:
+    coverage: automated
+    rule_ids:
+    - gallery.no_mutable_artwork_metadata
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-001
+  title: Artwork files resolve from files array
+  type: files
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Directory Layout
+    anchor: directory-layout
+  text: Within an artwork manifest, each `files[].relative_path` value is authoritative
+    for locating that file and is resolved relative to the directory containing the
+    `.oaartwork` manifest.
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.relative_path_exists
+    severity: error
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-002
+  title: Readers do not infer files by scanning
+  type: reader
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Directory Layout
+    anchor: directory-layout
+  text: Readers MUST NOT infer artwork-associated files by scanning an artwork directory
+    as a substitute for the `files[]` entries.
+  validation:
+    coverage: not_validator_scope
+    reason: This is reader import behavior; embedded file validity is covered by OAA-FILE-001
+      and OAA-FILE-012.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-001
+  title: Manifest files are UTF-8 JSON
+  type: manifest
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Manifest files MUST be encoded as UTF-8 JSON.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.json_object
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-002
+  title: Manifest top level is object
+  type: manifest
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Manifest files MUST contain a JSON object at the top level.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.json_object
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-003
+  title: Manifest JSON objects do not duplicate member names
+  type: manifest
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Manifest JSON objects MUST NOT contain duplicate member names.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.duplicate_json_members
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-004
+  title: Readers do not require byte order mark
+  type: reader
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Readers MUST NOT require a byte order mark.
+  validation:
+    coverage: not_validator_scope
+    reason: This is reader tolerance behavior; manifest JSON validity is covered by
+      OAA-MAN-001 and OAA-MAN-002.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-005
+  title: Writers do not emit byte order mark
+  type: manifest
+  level: SHOULD_NOT
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Writers SHOULD NOT emit a byte order mark.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.byte_order_mark
+    severity: warning
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-006
+  title: Manifest schema version is present
+  type: manifest
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Manifest files MUST include `schema_version`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.schema_version_required
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-007
+  title: Manifest schema version is 0.1
+  type: manifest
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: For this draft, `schema_version` MUST be the string `0.1` in `.oacollection`,
+    `.oagallery`, and `.oaartwork` manifests.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.schema_version_supported
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-008
+  title: Manifest schema versions match
+  type: manifest
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: All OAA manifest types in one archive SHOULD use the same `schema_version`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.same_schema_versions
+    severity: warning
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-009
+  title: Unsupported higher schema versions are rejected
+  type: manifest
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Readers MUST reject manifests with an unsupported higher required schema version
+    unless they explicitly support that version.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.schema_version_supported
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-010
+  title: Unknown optional fields are ignored
+  type: manifest
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Readers MUST ignore unrecognized optional fields and extension blocks when
+    interpreting a manifest.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.unknown_optional_fields
+    severity: info
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-011
+  title: Unknown fields are preserved when rewriting
+  type: round-trip
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Writers SHOULD preserve unrecognized optional fields and extension blocks
+    when rewriting a manifest, when practical.
+  validation:
+    coverage: not_validator_scope
+    reason: Round-trip preservation is outside archive validity validation.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-012
+  title: Required strings are not empty
+  type: manifest
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Required string fields MUST NOT be empty unless this specification explicitly
+    defines an empty-string sentinel for that field.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.required_string_not_empty
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-013
+  title: Required identifiers are not whitespace only
+  type: manifest
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Required identifier fields MUST NOT contain only whitespace.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.required_identifier_not_whitespace
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-014
+  title: Readers preserve strings as written
+  type: reader
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Readers SHOULD preserve string values as written.
+  validation:
+    coverage: not_validator_scope
+    reason: String preservation is reader/round-trip behavior outside archive validity
+      validation.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-015
+  title: Readers do not trim path fields
+  type: manifest
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Readers MUST NOT trim path fields before resolving them.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.manifest_path_safe
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-MAN-016
+  title: Manifest matches JSON Schema
+  type: manifest
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Manifest Files
+    anchor: manifest-files
+  text: Manifest files MUST match the manifest-local JSON structure defined by
+    `schema/oaa-manifest.schema.json`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - manifests.field_type
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-010
+  title: Collection required fields are present
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: Collection manifests require `schema_version`, `id`, `name`, `galleries`,
+    and `artworks`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.required_fields
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-011
+  title: Collection external links are external link objects
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: When present, each `external_links[]` entry MUST be an external link object.
+  validation:
+    coverage: automated
+    rule_ids:
+    - external_links.object
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-012
+  title: Collection galleries entries are reference objects
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: Each `galleries[]` entry MUST be a collection gallery reference object.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.gallery_refs_objects
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-013
+  title: Collection artworks entries are reference objects
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: Each `artworks[]` entry MUST be a collection artwork reference object.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.artwork_refs_objects
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-014
+  title: Collection gallery IDs are unique
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: Collection `galleries[].id` values MUST be unique within the collection manifest.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.unique_gallery_ids
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-015
+  title: Collection gallery paths are unique
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: Collection `galleries[].path` values MUST be unique within the collection
+    manifest.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.unique_gallery_paths
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-016
+  title: Collection gallery paths are archive-relative
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: Collection `galleries[].path` values MUST be archive-relative paths.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.manifest_path_safe
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-017
+  title: Gallery manifest IDs match collection references
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: The `id` field inside a referenced `.oagallery` manifest MUST match the corresponding
+    collection `galleries[].id` value.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.gallery_manifest_id_match
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-018
+  title: Collection artwork IDs are unique
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: Collection `artworks[].id` values MUST be unique within the collection manifest.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.unique_artwork_ids
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-019
+  title: Collection artwork paths are unique
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: Collection `artworks[].path` values MUST be unique within the collection manifest.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.unique_artwork_paths
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-020
+  title: Collection artwork paths are archive-relative
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: Collection `artworks[].path` values MUST be archive-relative paths.
+  validation:
+    coverage: automated
+    rule_ids:
+    - paths.manifest_path_safe
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-COL-021
+  title: Artwork manifest IDs match collection references
+  type: collection
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Collection Manifest
+    anchor: collection-manifest
+  text: The `id` field inside a referenced `.oaartwork` manifest MUST match the corresponding
+    collection `artworks[].id` value.
+  validation:
+    coverage: automated
+    rule_ids:
+    - collection.artwork_manifest_id_match
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-GAL-010
+  title: Gallery required fields are present
+  type: gallery
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Gallery Manifest
+    anchor: gallery-manifest
+  text: Gallery manifests require `schema_version`, `id`, `name`, and `artworks`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - gallery.required_fields
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-GAL-011
+  title: Gallery artwork entries are reference objects
+  type: gallery
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Gallery Manifest
+    anchor: gallery-manifest
+  text: Each `artworks[]` entry MUST be a gallery artwork reference object.
+  validation:
+    coverage: automated
+    rule_ids:
+    - gallery.artwork_refs_objects
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-GAL-012
+  title: Gallery artwork references resolve
+  type: gallery
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Gallery Manifest
+    anchor: gallery-manifest
+  text: The `id` value in each gallery artwork reference MUST match an artwork reference
+    in the root `.oacollection` manifest.
+  validation:
+    coverage: automated
+    rule_ids:
+    - gallery.artwork_refs_resolve
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-GAL-013
+  title: Gallery artwork IDs are unique
+  type: gallery
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Gallery Manifest
+    anchor: gallery-manifest
+  text: Within one `.oagallery` manifest, `artworks[].id` values MUST be unique.
+  validation:
+    coverage: automated
+    rule_ids:
+    - gallery.unique_artwork_ids
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-ART-010
+  title: Artwork required fields are present
+  type: artwork
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Artwork Manifest
+    anchor: artwork-manifest
+  text: Artwork manifests require `schema_version`, `id`, `title`, and `files`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - artwork.required_fields
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-ART-011
+  title: Artwork public metadata is object
+  type: artwork
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Artwork Manifest
+    anchor: artwork-manifest
+  text: When present, the `public_metadata` field MUST be a public artwork metadata
+    object.
+  validation:
+    coverage: automated
+    rule_ids:
+    - artwork.public_metadata_object
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-ART-012
+  title: Artwork private metadata is object
+  type: artwork
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Artwork Manifest
+    anchor: artwork-manifest
+  text: When present, the `private_metadata` field MUST be a private artwork metadata
+    object.
+  validation:
+    coverage: automated
+    rule_ids:
+    - artwork.private_metadata_object
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-ART-013
+  title: Artwork files entries are file objects
+  type: artwork
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Artwork Manifest
+    anchor: artwork-manifest
+  text: Each `files[]` entry MUST be an artwork file object.
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.entries_objects
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-LINK-001
+  title: External links are objects
+  type: external_links
+  level: MUST
+  source:
+    file: SPEC.md
+    section: External Link Object
+    anchor: external-link-object
+  text: External link entries MUST be external link objects.
+  validation:
+    coverage: automated
+    rule_ids:
+    - external_links.object
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-LINK-002
+  title: External link provider has valid grammar
+  type: external_links
+  level: MUST
+  source:
+    file: SPEC.md
+    section: External Link Object
+    anchor: external-link-object
+  text: Provider identifiers MUST contain only lowercase ASCII letters, digits, hyphen,
+    underscore, and period.
+  validation:
+    coverage: automated
+    rule_ids:
+    - external_links.provider
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-LINK-003
+  title: External link provider does not begin or end with period
+  type: external_links
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: External Link Object
+    anchor: external-link-object
+  text: Provider identifiers MUST NOT begin or end with a period.
+  validation:
+    coverage: automated
+    rule_ids:
+    - external_links.provider
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-LINK-004
+  title: External link provider has no consecutive periods
+  type: external_links
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: External Link Object
+    anchor: external-link-object
+  text: Provider identifiers MUST NOT contain consecutive periods.
+  validation:
+    coverage: automated
+    rule_ids:
+    - external_links.provider
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-LINK-005
+  title: External link IDs are not empty
+  type: external_links
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: External Link Object
+    anchor: external-link-object
+  text: The external link `id` value MUST NOT be empty.
+  validation:
+    coverage: automated
+    rule_ids:
+    - external_links.id
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-LINK-006
+  title: External link URL may be empty sentinel
+  type: external_links
+  level: MAY
+  source:
+    file: SPEC.md
+    section: External Link Object
+    anchor: external-link-object
+  text: The `url` value MAY be an empty string when no stable URL is known.
+  validation:
+    coverage: not_validator_scope
+    reason: This requirement grants permission for an empty-string sentinel; it
+      does not define an invalid archive condition.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-LINK-010
+  title: External link URL is string
+  type: external_links
+  level: MUST
+  source:
+    file: SPEC.md
+    section: External Link Object
+    anchor: external-link-object
+  text: The external link `url` field MUST be a string.
+  validation:
+    coverage: automated
+    rule_ids:
+    - external_links.url
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-LINK-007
+  title: Non-empty external link URLs are absolute
+  type: external_links
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: External Link Object
+    anchor: external-link-object
+  text: When `url` is non-empty, it SHOULD be an absolute URL.
+  validation:
+    coverage: automated
+    rule_ids:
+    - external_links.url
+    severity: warning
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-LINK-008
+  title: Unknown external link providers are accepted
+  type: external_links
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: External Link Object
+    anchor: external-link-object
+  text: Readers MUST NOT reject an external link only because its `provider` value
+    is unknown.
+  validation:
+    coverage: automated
+    rule_ids:
+    - external_links.unknown_provider
+    severity: info
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-LINK-009
+  title: Unknown external links are preserved when rewriting
+  type: round-trip
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: External Link Object
+    anchor: external-link-object
+  text: Readers SHOULD preserve unknown external links when rewriting manifests, when
+    practical.
+  validation:
+    coverage: not_validator_scope
+    reason: Round-trip preservation is outside this structural validator.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PUB-001
+  title: Artist credit entries contain artist data
+  type: artwork
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Public Artwork Metadata Object
+    anchor: public-artwork-metadata-object
+  text: When present, each `artist_credits[]` entry MUST be an artist credit object
+    and MUST include at least one of `display_name`, `first_name`, `last_name`, or
+    `role`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - artwork.artist_credit_objects
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PUB-002
+  title: Publication status uses closed base value set
+  type: artwork
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Public Artwork Metadata Object
+    anchor: public-artwork-metadata-object
+  text: When present and not null, `public_metadata.publication_status` MUST be
+    `published_art` or `unpublished_art`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - artwork.publication_status
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-PRIV-001
+  title: Private metadata is not public by default
+  type: privacy
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Private Artwork Metadata Object
+    anchor: private-artwork-metadata-object
+  text: Private metadata MUST NOT be treated as public publishing metadata by default.
+  validation:
+    coverage: not_validator_scope
+    reason: Public display behavior is outside archive validity validation.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-010
+  title: Artwork files field is an array
+  type: files
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Artwork File Object
+    anchor: artwork-file-object
+  text: The `files` field MUST be an array.
+  validation:
+    coverage: automated
+    rule_ids:
+    - artwork.required_fields
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-011
+  title: Artwork files entries are objects
+  type: files
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Artwork File Object
+    anchor: artwork-file-object
+  text: Each entry in the `files` array MUST be a JSON object.
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.entries_objects
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-012
+  title: Every file entry identifies embedded file
+  type: files
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Artwork File Object
+    anchor: artwork-file-object
+  text: Every file entry in `files[]` MUST identify a file embedded in the OAA archive.
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.relative_path_exists
+    severity: error
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-013
+  title: File relative path is artwork-relative
+  type: files
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Artwork File Object
+    anchor: artwork-file-object
+  text: '`relative_path` MUST be an artwork-relative path and MUST resolve to a file
+    within the artwork directory.'
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.relative_path_safe
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-014
+  title: File relative path is not absolute
+  type: files
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Artwork File Object
+    anchor: artwork-file-object
+  text: '`relative_path` MUST NOT be absolute.'
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.relative_path_safe
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-015
+  title: File relative path has no traversal
+  type: files
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Artwork File Object
+    anchor: artwork-file-object
+  text: '`relative_path` MUST NOT contain parent-directory traversal segments such
+    as `../`.'
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.relative_path_safe
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-016
+  title: File IDs are unique within artwork manifest
+  type: files
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Identifiers
+    anchor: identifiers
+  text: File IDs MUST be unique within their containing artwork manifest.
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.unique_file_ids
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-017
+  title: At most one primary file
+  type: files
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Artwork File Object
+    anchor: artwork-file-object
+  text: 'At most one file entry per artwork SHOULD have `is_primary: true`.'
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.multiple_primary
+    severity: warning
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-018
+  title: File kind uses closed base value set
+  type: files
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Artwork File Object
+    anchor: artwork-file-object
+  text: '`files[].file_kind` MUST be one of `raw`, `derivative`, or `supporting`.'
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.file_kind
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-FILE-019
+  title: Image role uses closed base value set
+  type: files
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Artwork File Object
+    anchor: artwork-file-object
+  text: When present and not null, `files[].image_role` MUST be one of `raw_scan`,
+    `raw_photo`, `corrected_scan`, `detail`, `verso`, or `reference`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - files.image_role
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-EXT-001
+  title: Extension container is extensions object
+  type: extensions
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Extension Blocks
+    anchor: extension-blocks
+  text: An extension container is serialized as the JSON member named `extensions`.
+  validation:
+    coverage: automated
+    rule_ids:
+    - extensions.container_object
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-EXT-002
+  title: Extension block values are objects
+  type: extensions
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Extension Blocks
+    anchor: extension-blocks
+  text: Extension block values MUST be JSON objects.
+  validation:
+    coverage: automated
+    rule_ids:
+    - extensions.block_object
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-EXT-003
+  title: Extension blocks do not contain nested extension containers
+  type: extensions
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Extension Blocks
+    anchor: extension-blocks
+  text: Extension blocks MUST NOT contain nested extension containers.
+  validation:
+    coverage: automated
+    rule_ids:
+    - extensions.no_nested_extensions
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-EXT-004
+  title: Unknown extension blocks are ignored
+  type: extensions
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Extension Blocks
+    anchor: extension-blocks
+  text: Readers MUST ignore extension blocks they do not understand.
+  validation:
+    coverage: automated
+    rule_ids:
+    - extensions.unknown_block
+    severity: info
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-EXT-005
+  title: Extension blocks do not change base meaning
+  type: extensions
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Extension Blocks
+    anchor: extension-blocks
+  text: Extension blocks MUST NOT change the meaning of base OAA fields.
+  validation:
+    coverage: not_validator_scope
+    reason: Semantic override detection requires provider-specific interpretation.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-EXT-006
+  title: Extension block fields do not shadow present base fields
+  type: extensions
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Extension Blocks
+    anchor: extension-blocks
+  text: If an extension block uses a field name that matches an OAA base field
+    in the same object context, the corresponding base field MUST be omitted
+    from that object.
+  validation:
+    coverage: automated
+    rule_ids:
+    - extensions.no_base_field_shadow
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-SEC-001
+  title: Archive contents are untrusted input
+  type: security
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Security and Privacy Considerations
+    anchor: security-and-privacy-considerations
+  text: Readers MUST treat archive contents as untrusted input.
+  validation:
+    coverage: not_validator_scope
+    reason: This is reader threat-model behavior; the validator avoids extraction
+      but does not certify reader implementation behavior.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-SEC-002
+  title: Embedded files are untrusted content
+  type: security
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Security and Privacy Considerations
+    anchor: security-and-privacy-considerations
+  text: Readers MUST treat embedded artwork-associated files as untrusted content.
+  validation:
+    coverage: automated
+    rule_ids:
+    - security.high_risk_media
+    severity: warning
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-SEC-003
+  title: Extraction does not write outside destination
+  type: security
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Security and Privacy Considerations
+    anchor: security-and-privacy-considerations
+  text: Archive extraction MUST NOT write outside the selected destination.
+  validation:
+    coverage: not_validator_scope
+    reason: This is extraction behavior; the validator does not extract archives.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-SEC-004
+  title: Manifest values do not contain local paths
+  type: security
+  level: MUST_NOT
+  source:
+    file: SPEC.md
+    section: Security and Privacy Considerations
+    anchor: security-and-privacy-considerations
+  text: Manifest values MUST NOT contain apparent absolute local filesystem paths.
+  validation:
+    coverage: automated
+    rule_ids:
+    - security.local_path_in_manifest
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-SEC-006
+  title: Embedded files are not opened automatically
+  type: security
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Security and Privacy Considerations
+    anchor: security-and-privacy-considerations
+  text: Readers SHOULD avoid opening or rendering embedded files automatically.
+  validation:
+    coverage: not_validator_scope
+    reason: This is renderer behavior; the validator does not open or render embedded
+      files.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-SEC-007
+  title: Readers enforce resource limits
+  type: security
+  level: SHOULD
+  source:
+    file: SPEC.md
+    section: Security and Privacy Considerations
+    anchor: security-and-privacy-considerations
+  text: Readers SHOULD enforce reasonable limits on archive size, uncompressed size,
+    entry count, manifest size, JSON nesting depth, and individual file size.
+  validation:
+    coverage: automated
+    rule_ids:
+    - security.resource_limits
+    severity: fatal
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-CONF-001
+  title: Structural reader locates collection manifest
+  type: conformance
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Reader Requirements
+    anchor: reader-requirements
+  text: A Structural Reader MUST be able to locate the collection manifest.
+  validation:
+    coverage: not_validator_scope
+    reason: Conformance text describes reader capability; archive validity is covered
+      by OAA-COL-001.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-CONF-002
+  title: Structural reader validates mimetype
+  type: conformance
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Reader Requirements
+    anchor: reader-requirements
+  text: A Structural Reader MUST validate the root `mimetype` file.
+  validation:
+    coverage: not_validator_scope
+    reason: Conformance text describes reader capability; archive validity is covered
+      by OAA-PKG-010 and OAA-PKG-011.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-CONF-003
+  title: Structural reader resolves manifests
+  type: conformance
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Reader Requirements
+    anchor: reader-requirements
+  text: A Structural Reader MUST be able to locate gallery and artwork manifests from
+    references in the collection manifest.
+  validation:
+    coverage: not_validator_scope
+    reason: Conformance text describes reader capability; archive validity is covered
+      by OAA-GAL-001 and OAA-ART-001.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-CONF-004
+  title: Structural reader resolves gallery membership
+  type: conformance
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Reader Requirements
+    anchor: reader-requirements
+  text: A Structural Reader MUST resolve gallery artwork membership references by
+    artwork ID.
+  validation:
+    coverage: not_validator_scope
+    reason: Conformance text describes reader capability; archive validity is covered
+      by OAA-GAL-002 and OAA-GAL-012.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-CONF-005
+  title: Structural reader resolves artwork files
+  type: conformance
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Reader Requirements
+    anchor: reader-requirements
+  text: A Structural Reader MUST resolve artwork-associated files through `files[].relative_path`.
+  validation:
+    coverage: not_validator_scope
+    reason: Conformance text describes reader capability; archive validity is covered
+      by OAA-FILE-001 and OAA-FILE-012.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null
+- id: OAA-CONF-006
+  title: Structural reader rejects unsafe paths
+  type: conformance
+  level: MUST
+  source:
+    file: SPEC.md
+    section: Reader Requirements
+    anchor: reader-requirements
+  text: A Structural Reader MUST reject unsafe archive entry paths.
+  validation:
+    coverage: not_validator_scope
+    reason: Conformance text describes reader capability; archive path validity is
+      covered by OAA-PATH-001 through OAA-PATH-007 and OAA-PATH-011.
+  introduced_in: '0.1'
+  deprecated_in: null
+  superseded_by: null

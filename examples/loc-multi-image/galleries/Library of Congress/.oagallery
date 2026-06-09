@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.1",
+  "id": "gallery-loc-miscellaneous-items",
+  "name": "Miscellaneous Items in High Demand",
+  "artworks": [
+    {
+      "id": "OAA-00002",
+      "extensions": {}
+    }
+  ],
+  "extensions": {},
+  "external_links": [
+    {
+      "provider": "gov.loc",
+      "id": "loc",
+      "url": "https://www.loc.gov/pictures/collection/cph/",
+      "label": "Miscellaneous Items in High Demand",
+      "extensions": {
+        "gov.loc": {
+          "collection_name": "Miscellaneous Items in High Demand"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1571 @@
+{
+  "fixtures": [
+    {
+      "id": "non-zip-input",
+      "mode": "archive",
+      "kind": "non_zip",
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "package.archive_readable",
+          "requirement_ids": [
+            "OAA-PKG-001"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "wrong-extension",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "archive_name": "minimal.badext",
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "package.extension_oaa",
+          "requirement_ids": [
+            "OAA-PKG-002"
+          ],
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "encrypted-entry",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "zip_patch": "encrypted_first_entry",
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "package.encrypted_entries",
+          "requirement_ids": [
+            "OAA-ZIP-001"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "unsupported-compression",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "zip_patch": "unsupported_non_manifest_compression",
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "package.compression_method",
+          "requirement_ids": [
+            "OAA-ZIP-002"
+          ],
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "mimetype-not-first",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "mimetype_not_first": true,
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "package.mimetype_first",
+          "requirement_ids": [
+            "OAA-PKG-012"
+          ],
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "compressed-mimetype",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "mimetype_compressed": true,
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "package.mimetype_stored",
+          "requirement_ids": [
+            "OAA-PKG-013"
+          ],
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "non-utf8-archive-name",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "extra_archive_entries": [
+        {
+          "path": "artworks/OAA-00001/café.txt",
+          "text": "x"
+        }
+      ],
+      "zip_patch": "clear_utf8_flag_on_non_ascii",
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "paths.utf8_names",
+          "requirement_ids": [
+            "OAA-PATH-002"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "unsafe-archive-path",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "extra_archive_entries": [
+        {
+          "path": "../evil.txt",
+          "text": "bad"
+        }
+      ],
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "paths.safe_archive_path",
+          "requirement_ids": [
+            "OAA-PATH-001",
+            "OAA-PATH-003",
+            "OAA-PATH-004",
+            "OAA-PATH-005",
+            "OAA-PATH-006",
+            "OAA-PATH-007",
+            "OAA-PATH-011"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "non-nfc-path",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "extra_archive_entries": [
+        {
+          "path": "artworks/OAA-00001/cafe\u0301.txt",
+          "text": "x"
+        }
+      ],
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "paths.nfc",
+          "requirement_ids": [
+            "OAA-PATH-010"
+          ],
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-archive-entry",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "duplicate_archive_entry": "mimetype",
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "package.duplicate_entries",
+          "requirement_ids": [
+            "OAA-PATH-012"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "missing-mimetype",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "remove": [
+        "mimetype"
+      ],
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "package.mimetype_present",
+          "requirement_ids": [
+            "OAA-PKG-010"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "bad-mimetype",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "write_text": {
+        "mimetype": "application/vnd.original-art-archive+zip\n"
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "package.mimetype_value",
+          "requirement_ids": [
+            "OAA-PKG-011"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "missing-collection",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "remove": [
+        ".oacollection"
+      ],
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.manifest_present",
+          "requirement_ids": [
+            "OAA-COL-001"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "missing-gallery-manifest",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "remove": [
+        "galleries/Example Gallery/.oagallery"
+      ],
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.gallery_manifest_present",
+          "requirement_ids": [
+            "OAA-GAL-001"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "missing-artwork-manifest",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "remove": [
+        "artworks/OAA-00001/.oaartwork"
+      ],
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.artwork_manifest_present",
+          "requirement_ids": [
+            "OAA-ART-001"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "bad-json-top-level",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "write_text": {
+        ".oacollection": "[]"
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "manifests.json_object",
+          "requirement_ids": [
+            "OAA-MAN-001",
+            "OAA-MAN-002"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-json-member",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "write_text": {
+        ".oacollection": "{\"schema_version\":\"0.1\",\"schema_version\":\"0.1\",\"name\":\"Example\",\"galleries\":[],\"artworks\":[]}"
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "manifests.duplicate_json_members",
+          "requirement_ids": [
+            "OAA-MAN-003"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "manifest-with-bom",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "write_bytes": {
+        ".oacollection": "EFBBBF7B22736368656D615F76657273696F6E223A22302E31222C226964223A22636F6C6C656374696F6E2D6578616D706C65222C226E616D65223A224578616D706C65222C2267616C6C6572696573223A5B5D2C22617274776F726B73223A5B5D7D"
+      },
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "manifests.byte_order_mark",
+          "requirement_ids": [
+            "OAA-MAN-005"
+          ],
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "missing-schema-version",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "remove_keys": [
+            "schema_version"
+          ]
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "manifests.schema_version_required",
+          "requirement_ids": [
+            "OAA-MAN-006"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "unsupported-schema-version",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set": {
+            "schema_version": "2.0"
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "manifests.schema_version_supported",
+          "requirement_ids": [
+            "OAA-MAN-007",
+            "OAA-MAN-009"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "schema-version-mismatch",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "galleries/Example Gallery/.oagallery": {
+          "set": {
+            "schema_version": "0.2"
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "manifests.schema_version_supported",
+          "requirement_ids": [
+            "OAA-MAN-007",
+            "OAA-MAN-009"
+          ],
+          "severity": "fatal"
+        },
+        {
+          "rule_id": "manifests.same_schema_versions",
+          "requirement_ids": [
+            "OAA-MAN-008"
+          ],
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "unknown-optional-field",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set": {
+            "x_unknown": true
+          }
+        }
+      },
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "manifests.unknown_optional_fields",
+          "requirement_ids": [
+            "OAA-MAN-010"
+          ],
+          "severity": "info"
+        }
+      ]
+    },
+    {
+      "id": "empty-required-string",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set": {
+            "name": ""
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "manifests.required_string_not_empty",
+          "requirement_ids": [
+            "OAA-MAN-012"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "whitespace-required-id",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "galleries/Example Gallery/.oagallery": {
+          "set": {
+            "id": "   "
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "manifests.required_identifier_not_whitespace",
+          "requirement_ids": [
+            "OAA-MAN-013"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "untrimmed-manifest-path",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "galleries",
+            0,
+            "path"
+          ],
+          "value": " galleries/Example Gallery/.oagallery "
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "paths.manifest_path_safe",
+          "requirement_ids": [
+            "OAA-MAN-015",
+            "OAA-COL-016"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "untrimmed-artwork-manifest-path",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "artworks",
+            0,
+            "path"
+          ],
+          "value": " artworks/OAA-00001/.oaartwork "
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "paths.manifest_path_safe",
+          "requirement_ids": [
+            "OAA-MAN-015",
+            "OAA-COL-020"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "collection-missing-required",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "remove_keys": [
+            "id"
+          ]
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.required_fields",
+          "requirement_ids": [
+            "OAA-COL-010"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "collection-gallery-ref-not-object",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "galleries",
+            0
+          ],
+          "value": "bad"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.gallery_refs_objects",
+          "requirement_ids": [
+            "OAA-COL-012"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "collection-artwork-ref-not-object",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "artworks",
+            0
+          ],
+          "value": "bad"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.artwork_refs_objects",
+          "requirement_ids": [
+            "OAA-COL-013"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-gallery-id",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "galleries",
+            1,
+            "id"
+          ],
+          "value": "gallery-ap"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.unique_gallery_ids",
+          "requirement_ids": [
+            "OAA-COL-014"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-gallery-path",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "galleries",
+            1,
+            "path"
+          ],
+          "value": "galleries/AP/.oagallery"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.unique_gallery_paths",
+          "requirement_ids": [
+            "OAA-COL-015"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "gallery-id-mismatch",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "galleries/Example Gallery/.oagallery": {
+          "set": {
+            "id": "wrong"
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.gallery_manifest_id_match",
+          "requirement_ids": [
+            "OAA-COL-017"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-artwork-id",
+      "mode": "directory",
+      "source": "examples/public-domain-synthetic",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "artworks",
+            1,
+            "id"
+          ],
+          "value": "OAA-00003"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.unique_artwork_ids",
+          "requirement_ids": [
+            "OAA-COL-018"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-artwork-path",
+      "mode": "directory",
+      "source": "examples/public-domain-synthetic",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "artworks",
+            1,
+            "path"
+          ],
+          "value": "artworks/OAA-00003/.oaartwork"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.unique_artwork_paths",
+          "requirement_ids": [
+            "OAA-COL-019"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "artwork-id-mismatch",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "artworks/OAA-00001/.oaartwork": {
+          "set": {
+            "id": "wrong"
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "collection.artwork_manifest_id_match",
+          "requirement_ids": [
+            "OAA-COL-021"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "gallery-missing-required",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "galleries/Example Gallery/.oagallery": {
+          "remove_keys": [
+            "artworks"
+          ]
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "gallery.required_fields",
+          "requirement_ids": [
+            "OAA-GAL-010"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "gallery-artwork-ref-not-object",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "galleries/Example Gallery/.oagallery": {
+          "set_path": [
+            "artworks",
+            0
+          ],
+          "value": "bad"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "gallery.artwork_refs_objects",
+          "requirement_ids": [
+            "OAA-GAL-011"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "gallery-unknown-artwork",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "galleries/Example Gallery/.oagallery": {
+          "set_path": [
+            "artworks",
+            0,
+            "id"
+          ],
+          "value": "OAA-NOPE"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "gallery.artwork_refs_resolve",
+          "requirement_ids": [
+            "OAA-GAL-002",
+            "OAA-GAL-012"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-gallery-membership",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "galleries/Example Gallery/.oagallery": {
+          "set": {
+            "artworks": [
+              {
+                "id": "OAA-00001",
+                "extensions": {}
+              },
+              {
+                "id": "OAA-00001",
+                "extensions": {}
+              }
+            ]
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "gallery.unique_artwork_ids",
+          "requirement_ids": [
+            "OAA-GAL-013"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "gallery-duplicates-mutable-artwork-metadata",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "galleries/Example Gallery/.oagallery": {
+          "set_path": [
+            "artworks",
+            0,
+            "title"
+          ],
+          "value": "Bad duplicate"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "gallery.no_mutable_artwork_metadata",
+          "requirement_ids": [
+            "OAA-GAL-003"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "artwork-missing-required",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "artworks/OAA-00001/.oaartwork": {
+          "remove_keys": [
+            "files"
+          ]
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "artwork.required_fields",
+          "requirement_ids": [
+            "OAA-ART-010",
+            "OAA-FILE-010"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "public-metadata-not-object",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "artworks/OAA-00001/.oaartwork": {
+          "set": {
+            "public_metadata": "bad"
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "artwork.public_metadata_object",
+          "requirement_ids": [
+            "OAA-ART-011"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "private-metadata-not-object",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "artworks/OAA-00001/.oaartwork": {
+          "set": {
+            "private_metadata": "bad"
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "artwork.private_metadata_object",
+          "requirement_ids": [
+            "OAA-ART-012"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "schema-field-type-error",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "set_path": [
+            "public_metadata",
+            "is_public"
+          ],
+          "value": "yes"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "manifests.field_type",
+          "requirement_ids": [
+            "OAA-MAN-016"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "files-entry-not-object",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "set_path": [
+            "files",
+            0
+          ],
+          "value": "bad"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "files.entries_objects",
+          "requirement_ids": [
+            "OAA-ART-013",
+            "OAA-FILE-011"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "external-link-not-object",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "external_links",
+            0
+          ],
+          "value": "bad"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "external_links.object",
+          "requirement_ids": [
+            "OAA-COL-011",
+            "OAA-LINK-001"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "external-link-bad-provider",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "external_links",
+            0,
+            "provider"
+          ],
+          "value": ".Bad..Provider"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "external_links.provider",
+          "requirement_ids": [
+            "OAA-LINK-002",
+            "OAA-LINK-003",
+            "OAA-LINK-004"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "external-link-empty-id",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "external_links",
+            0,
+            "id"
+          ],
+          "value": ""
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "external_links.id",
+          "requirement_ids": [
+            "OAA-LINK-005"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "external-link-relative-url",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "external_links",
+            0,
+            "url"
+          ],
+          "value": "/relative"
+        }
+      },
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "external_links.url",
+          "requirement_ids": [
+            "OAA-LINK-007"
+          ],
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "external-link-url-not-string",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        ".oacollection": {
+          "set_path": [
+            "external_links",
+            0,
+            "url"
+          ],
+          "value": 42
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "external_links.url",
+          "requirement_ids": [
+            "OAA-LINK-010"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "external-link-unknown-provider",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set": {
+            "external_links": [
+              {
+                "provider": "org.unknown",
+                "id": "x",
+                "url": "",
+                "extensions": {}
+              }
+            ]
+          }
+        }
+      },
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "external_links.unknown_provider",
+          "requirement_ids": [
+            "OAA-LINK-008"
+          ],
+          "severity": "info"
+        }
+      ]
+    },
+    {
+      "id": "artist-credit-not-object",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "set_path": [
+            "public_metadata",
+            "artist_credits",
+            0
+          ],
+          "value": "bad"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "artwork.artist_credit_objects",
+          "requirement_ids": [
+            "OAA-PUB-001"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "artist-credit-empty",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "set_path": [
+            "public_metadata",
+            "artist_credits",
+            0
+          ],
+          "value": {
+            "extensions": {}
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "artwork.artist_credit_objects",
+          "requirement_ids": [
+            "OAA-PUB-001"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "bad-publication-status",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "set_path": [
+            "public_metadata",
+            "publication_status"
+          ],
+          "value": "CAF Member Art"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "artwork.publication_status",
+          "requirement_ids": [
+            "OAA-PUB-002"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "extension-shadows-base-publication-status",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "set_path": [
+            "public_metadata",
+            "extensions",
+            "com.comicartfans",
+            "publication_status"
+          ],
+          "value": "CAF Member Art"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "extensions.no_base_field_shadow",
+          "requirement_ids": [
+            "OAA-EXT-006"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "missing-embedded-file",
+      "mode": "directory",
+      "source": "examples/full",
+      "remove": [
+        "artworks/OAA-00044/hit-comics-5-cover.png"
+      ],
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "files.relative_path_exists",
+          "requirement_ids": [
+            "OAA-FILE-001",
+            "OAA-FILE-012"
+          ],
+          "severity": "error"
+        }
+      ]
+    },
+    {
+      "id": "unsafe-file-relative-path",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "set_path": [
+            "files",
+            0,
+            "relative_path"
+          ],
+          "value": "../outside.png"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "files.relative_path_safe",
+          "requirement_ids": [
+            "OAA-FILE-013",
+            "OAA-FILE-014",
+            "OAA-FILE-015"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-file-id",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "duplicate_first_file": true
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "files.unique_file_ids",
+          "requirement_ids": [
+            "OAA-FILE-016"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "multiple-primary-files",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "duplicate_first_file_with_new_id": "file-second-primary"
+        }
+      },
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "files.multiple_primary",
+          "requirement_ids": [
+            "OAA-FILE-017"
+          ],
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "bad-file-kind",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "set_path": [
+            "files",
+            0,
+            "file_kind"
+          ],
+          "value": "provider-special"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "files.file_kind",
+          "requirement_ids": [
+            "OAA-FILE-018"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "bad-image-role",
+      "mode": "directory",
+      "source": "examples/full",
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "set_path": [
+            "files",
+            0,
+            "image_role"
+          ],
+          "value": "provider-special-role"
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "files.image_role",
+          "requirement_ids": [
+            "OAA-FILE-019"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "extensions-not-object",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set": {
+            "extensions": "bad"
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "extensions.container_object",
+          "requirement_ids": [
+            "OAA-EXT-001"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "extension-block-not-object",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set": {
+            "extensions": {
+              "org.example": "bad"
+            }
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "extensions.block_object",
+          "requirement_ids": [
+            "OAA-EXT-002"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "nested-extension-container",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set": {
+            "extensions": {
+              "org.example": {
+                "extensions": {}
+              }
+            }
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "extensions.no_nested_extensions",
+          "requirement_ids": [
+            "OAA-EXT-003"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "unknown-extension-block",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set": {
+            "extensions": {
+              "org.unknown": {}
+            }
+          }
+        }
+      },
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "extensions.unknown_block",
+          "requirement_ids": [
+            "OAA-EXT-004"
+          ],
+          "severity": "info"
+        }
+      ]
+    },
+    {
+      "id": "local-path-in-extension",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        ".oacollection": {
+          "set": {
+            "extensions": {
+              "org.example": {
+                "local_path": "C:\\\\Users\\\\grant\\\\secret.jpg"
+              }
+            }
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "security.local_path_in_manifest",
+          "requirement_ids": [
+            "OAA-SEC-004"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "local-posix-path-in-manifest",
+      "mode": "directory",
+      "source": "examples/minimal",
+      "json_updates": {
+        "artworks/OAA-00001/.oaartwork": {
+          "set": {
+            "public_metadata": {
+              "description": "/home/grant/secret.jpg"
+            }
+          }
+        }
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "security.local_path_in_manifest",
+          "requirement_ids": [
+            "OAA-SEC-004"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    },
+    {
+      "id": "high-risk-media",
+      "mode": "directory",
+      "source": "examples/full",
+      "add_file": {
+        "artworks/OAA-00044/script.html": "<script></script>"
+      },
+      "json_updates": {
+        "artworks/OAA-00044/.oaartwork": {
+          "append_file": {
+            "id": "file-script",
+            "file_name": "script.html",
+            "relative_path": "script.html",
+            "file_kind": "supporting",
+            "media_type": "text/html",
+            "is_primary": false,
+            "extensions": {},
+            "external_links": []
+          }
+        }
+      },
+      "expected_valid": true,
+      "expected_findings": [
+        {
+          "rule_id": "security.high_risk_media",
+          "requirement_ids": [
+            "OAA-SEC-002"
+          ],
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "resource-limit-entry-count",
+      "mode": "archive",
+      "source": "examples/minimal",
+      "limits": {
+        "max_entries": 1
+      },
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "security.resource_limits",
+          "requirement_ids": [
+            "OAA-SEC-007"
+          ],
+          "severity": "fatal"
+        }
+      ]
+    }
+  ]
+}

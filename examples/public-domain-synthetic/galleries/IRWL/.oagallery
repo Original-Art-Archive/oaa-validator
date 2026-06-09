@@ -1,0 +1,30 @@
+{
+  "schema_version": "0.1",
+  "id": "gallery-irwl",
+  "name": "IRWL Synthetic Originals",
+  "artworks": [
+    {
+      "id": "OAA-00004",
+      "extensions": {}
+    },
+    {
+      "id": "OAA-00005",
+      "extensions": {}
+    }
+  ],
+  "extensions": {},
+  "external_links": [
+    {
+      "provider": "com.comicbookplus",
+      "id": "62011",
+      "url": "https://comicbookplus.com/?dlid=62011",
+      "label": "IRWL public-domain source comic",
+      "extensions": {
+        "com.comicbookplus": {
+          "dlid": "62011",
+          "source_note": "Public-domain comic used as the basis for synthetic original-art fixture images."
+        }
+      }
+    }
+  ]
+}

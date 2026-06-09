@@ -1,0 +1,87 @@
+{
+  "schema_version": "0.1",
+  "id": "OAA-00005",
+  "title": "IRWL 012 Cleaned White",
+  "public_metadata": {
+    "description": "Synthetic original-art demonstration image derived from a public-domain comic and cleaned to a white-page presentation.",
+    "for_sale_status": null,
+    "media": "Synthetic cleaned scan derived from public-domain comic art",
+    "artwork_type": "Interior Page",
+    "publication_status": "published_art",
+    "is_public": true,
+    "artist_credits": [
+      {
+        "display_name": "Matt Baker",
+        "first_name": "Matt",
+        "last_name": "Baker",
+        "role": "Penciller"
+      },
+      {
+        "display_name": "Ray Osrin",
+        "first_name": "Ray",
+        "last_name": "Osrin",
+        "role": "Inker"
+      }
+    ],
+    "extensions": {
+      "org.originalartarchive.examples": {
+        "fixture_kind": "synthetic_public_domain_derivative",
+        "source_publication": "IRWL"
+      }
+    }
+  },
+  "private_metadata": {
+    "extensions": {}
+  },
+  "files": [
+    {
+      "id": "file-irwl-012-cleaned-white",
+      "file_name": "irwl-012-cleaned-white.png",
+      "relative_path": "irwl-012-cleaned-white.png",
+      "file_kind": "raw",
+      "size_bytes": 4078858,
+      "width": 1584,
+      "height": 2154,
+      "format": "PNG",
+      "media_type": "image/png",
+      "is_primary": true,
+      "image_role": "corrected_scan",
+      "extensions": {
+        "org.originalartarchive.examples": {
+          "fixture_kind": "synthetic_public_domain_derivative",
+          "source_dlid": "62011",
+          "source_page_hint": "IRWL_012"
+        }
+      },
+      "external_links": [
+        {
+          "provider": "com.comicbookplus",
+          "id": "62011",
+          "url": "https://comicbookplus.com/?dlid=62011",
+          "label": "Source public-domain comic",
+          "extensions": {
+            "com.comicbookplus": {
+              "dlid": "62011",
+              "source_note": "Public-domain comic used as the basis for this synthetic PNG fixture."
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "extensions": {},
+  "external_links": [
+    {
+      "provider": "com.comicbookplus",
+      "id": "62011",
+      "url": "https://comicbookplus.com/?dlid=62011",
+      "label": "IRWL public-domain source comic",
+      "extensions": {
+        "com.comicbookplus": {
+          "dlid": "62011",
+          "source_note": "Public-domain comic used as the basis for the synthetic fixture image."
+        }
+      }
+    }
+  ]
+}

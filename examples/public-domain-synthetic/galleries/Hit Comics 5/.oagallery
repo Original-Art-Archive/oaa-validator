@@ -1,0 +1,26 @@
+{
+  "schema_version": "0.1",
+  "id": "gallery-hit-comics-5",
+  "name": "Hit Comics #5",
+  "artworks": [
+    {
+      "id": "OAA-00003",
+      "extensions": {}
+    }
+  ],
+  "extensions": {},
+  "external_links": [
+    {
+      "provider": "com.comicbookplus",
+      "id": "28295",
+      "url": "https://comicbookplus.com/?dlid=28295",
+      "label": "Hit Comics #5 public-domain source",
+      "extensions": {
+        "com.comicbookplus": {
+          "dlid": "28295",
+          "source_note": "Public-domain published cover used as the basis for the synthetic fixture image."
+        }
+      }
+    }
+  ]
+}

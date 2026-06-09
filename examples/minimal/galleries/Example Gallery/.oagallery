@@ -1,0 +1,13 @@
+{
+  "schema_version": "0.1",
+  "id": "gallery-example",
+  "name": "Example Gallery",
+  "artworks": [
+    {
+      "id": "OAA-00001",
+      "extensions": {}
+    }
+  ],
+  "extensions": {},
+  "external_links": []
+}

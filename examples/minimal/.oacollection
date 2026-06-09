@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "id": "collection-example",
+  "name": "Example Collection",
+  "galleries": [
+    {
+      "id": "gallery-example",
+      "name": "Example Gallery",
+      "path": "galleries/Example Gallery/.oagallery",
+      "extensions": {}
+    }
+  ],
+  "artworks": [
+    {
+      "id": "OAA-00001",
+      "path": "artworks/OAA-00001/.oaartwork",
+      "extensions": {}
+    }
+  ],
+  "extensions": {},
+  "external_links": []
+}

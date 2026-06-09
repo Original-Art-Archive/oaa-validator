@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.1",
+  "id": "collection-full-example",
+  "name": "Example Full Collection",
+  "galleries": [
+    {
+      "id": "gallery-ap",
+      "name": "AP",
+      "path": "galleries/AP/.oagallery",
+      "extensions": {}
+    },
+    {
+      "id": "gallery-for-sale",
+      "name": "For Sale",
+      "path": "galleries/For Sale/.oagallery",
+      "extensions": {}
+    }
+  ],
+  "artworks": [
+    {
+      "id": "OAA-00044",
+      "path": "artworks/OAA-00044/.oaartwork",
+      "extensions": {}
+    }
+  ],
+  "extensions": {},
+  "external_links": [
+    {
+      "provider": "com.comicartfans",
+      "id": "example-gcat",
+      "url": "https://example.com/comicartfans/collection/example-gcat",
+      "extensions": {
+        "com.comicartfans": {
+          "gcat": "example-gcat"
+        }
+      }
+    },
+    {
+      "provider": "com.snikt",
+      "id": "example-user-id",
+      "url": "https://example.com/snikt/user/example-user-id",
+      "extensions": {
+        "com.snikt": {
+          "user_id": "example-user-id"
+        }
+      }
+    },
+    {
+      "provider": "com.raremarq",
+      "id": "example-user",
+      "url": "https://example.com/raremarq/u/example-user",
+      "extensions": {
+        "com.raremarq": {
+          "user_slug": "example-user"
+        }
+      }
+    }
+  ]
+}

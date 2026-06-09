@@ -1,0 +1,24 @@
+{
+  "schema_version": "0.1",
+  "id": "gallery-for-sale",
+  "name": "For Sale",
+  "artworks": [
+    {
+      "id": "OAA-00044",
+      "extensions": {}
+    }
+  ],
+  "extensions": {},
+  "external_links": [
+    {
+      "provider": "com.comicartfans",
+      "id": "example-gsub-for-sale",
+      "url": "https://example.com/comicartfans/gallery/example-gsub-for-sale",
+      "extensions": {
+        "com.comicartfans": {
+          "gsub": "example-gsub-for-sale"
+        }
+      }
+    }
+  ]
+}

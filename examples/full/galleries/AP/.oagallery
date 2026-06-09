@@ -1,0 +1,44 @@
+{
+  "schema_version": "0.1",
+  "id": "gallery-ap",
+  "name": "AP",
+  "artworks": [
+    {
+      "id": "OAA-00044",
+      "extensions": {}
+    }
+  ],
+  "extensions": {},
+  "external_links": [
+    {
+      "provider": "com.comicartfans",
+      "id": "example-gsub-ap",
+      "url": "https://example.com/comicartfans/gallery/example-gsub-ap",
+      "extensions": {
+        "com.comicartfans": {
+          "gsub": "example-gsub-ap"
+        }
+      }
+    },
+    {
+      "provider": "com.snikt",
+      "id": "example-gallery-id",
+      "url": "https://example.com/snikt/gallery/example-gallery-id",
+      "extensions": {
+        "com.snikt": {
+          "gallery_id": "example-gallery-id"
+        }
+      }
+    },
+    {
+      "provider": "com.raremarq",
+      "id": "example-gallery",
+      "url": "https://example.com/raremarq/u/example-user/galleries/example-gallery",
+      "extensions": {
+        "com.raremarq": {
+          "gallery_slug": "example-gallery"
+        }
+      }
+    }
+  ]
+}

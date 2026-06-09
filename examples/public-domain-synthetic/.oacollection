@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.1",
+  "id": "collection-public-domain-synthetic",
+  "name": "Synthetic Public Domain Fixture Collection",
+  "galleries": [
+    {
+      "id": "gallery-hit-comics-5",
+      "name": "Hit Comics #5",
+      "path": "galleries/Hit Comics 5/.oagallery",
+      "extensions": {}
+    },
+    {
+      "id": "gallery-irwl",
+      "name": "IRWL Synthetic Originals",
+      "path": "galleries/IRWL/.oagallery",
+      "extensions": {}
+    }
+  ],
+  "artworks": [
+    {
+      "id": "OAA-00003",
+      "path": "artworks/OAA-00003/.oaartwork",
+      "extensions": {}
+    },
+    {
+      "id": "OAA-00004",
+      "path": "artworks/OAA-00004/.oaartwork",
+      "extensions": {}
+    },
+    {
+      "id": "OAA-00005",
+      "path": "artworks/OAA-00005/.oaartwork",
+      "extensions": {}
+    }
+  ],
+  "extensions": {
+    "org.originalartarchive.examples": {
+      "fixture_kind": "synthetic_public_domain_derivatives",
+      "source_note": "User-approved example archive using synthetic images derived from public-domain published comics."
+    }
+  },
+  "external_links": [
+    {
+      "provider": "com.comicbookplus",
+      "id": "fixture-sources",
+      "url": "https://comicbookplus.com/",
+      "label": "Comic Book Plus public-domain source material",
+      "extensions": {
+        "com.comicbookplus": {
+          "source_dlids": [
+            "28295",
+            "62011"
+          ],
+          "rights_note": "Source material was provided for this example as public-domain material."
+        }
+      }
+    }
+  ]
+}

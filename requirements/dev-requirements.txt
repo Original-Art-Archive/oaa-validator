@@ -1,0 +1,4 @@
+PyYAML>=6.0.2,<7
+jsonschema>=4.22,<5
+build>=1.2,<2
+twine>=5,<7

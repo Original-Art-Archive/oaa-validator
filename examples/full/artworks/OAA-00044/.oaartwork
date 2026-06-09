@@ -1,0 +1,116 @@
+{
+  "schema_version": "0.1",
+  "id": "OAA-00044",
+  "title": "Example Artwork With Metadata",
+  "public_metadata": {
+    "description": "Full example artwork record using an embedded synthetic PNG fixture derived from public-domain comic material.",
+    "for_sale_status": "NFS",
+    "media": "Synthetic digital image derived from a public-domain printed cover",
+    "artwork_type": "Cover",
+    "publication_status": "published_art",
+    "is_public": true,
+    "artist_credits": [
+      {
+        "display_name": "Lou Fine",
+        "first_name": "Lou",
+        "last_name": "Fine",
+        "role": "Penciller"
+      },
+      {
+        "display_name": "Lou Fine",
+        "first_name": "Lou",
+        "last_name": "Fine",
+        "role": "Inker"
+      }
+    ],
+    "extensions": {
+      "com.comicartfans": {
+        "media_type_id": "11",
+        "art_type_id": "1",
+        "publication_status_id": "1",
+        "illustration_exchange": false,
+        "ix_for_sale": false
+      },
+      "com.raremarq": {},
+      "org.originalartarchive.examples": {
+        "fixture_kind": "synthetic_public_domain_derivative",
+        "source_publication": "Hit Comics #5"
+      }
+    }
+  },
+  "private_metadata": {
+    "purchase_price": null,
+    "estimated_value": null,
+    "purchase_date": null,
+    "provenance": null,
+    "personal_notes": null,
+    "extensions": {}
+  },
+  "files": [
+    {
+      "id": "file-hit-comics-5-cover",
+      "file_name": "hit-comics-5-cover.png",
+      "relative_path": "hit-comics-5-cover.png",
+      "file_kind": "raw",
+      "size_bytes": 250273,
+      "width": 579,
+      "height": 800,
+      "format": "PNG",
+      "media_type": "image/png",
+      "is_primary": true,
+      "image_role": "corrected_scan",
+      "extensions": {
+        "app.oa-curator": {
+          "source_kind": "imported"
+        },
+        "com.comicartfans": {
+          "format_tier": "basic"
+        },
+        "org.originalartarchive.examples": {
+          "fixture_kind": "synthetic_public_domain_derivative",
+          "source_dlid": "28295"
+        }
+      },
+      "external_links": [
+        {
+          "provider": "com.comicbookplus",
+          "id": "28295",
+          "url": "https://comicbookplus.com/?dlid=28295",
+          "extensions": {
+            "com.comicbookplus": {
+              "source_note": "Public-domain published cover used as the basis for this synthetic PNG fixture."
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "extensions": {},
+  "external_links": [
+    {
+      "provider": "com.comicbookplus",
+      "id": "28295",
+      "url": "https://comicbookplus.com/?dlid=28295",
+      "extensions": {
+        "com.comicbookplus": {
+          "source_note": "Public-domain published cover used as the basis for the synthetic fixture image."
+        }
+      }
+    },
+    {
+      "provider": "com.comicartfans",
+      "id": "example-piece-id",
+      "url": "https://example.com/comicartfans/piece/example-piece-id"
+    },
+    {
+      "provider": "com.snikt",
+      "id": "example-image-id",
+      "url": "https://example.com/snikt/image/example-image-id"
+    },
+    {
+      "provider": "com.raremarq",
+      "id": "example-piece",
+      "url": "https://example.com/raremarq/u/example-user/pieces/example-piece"
+    }
+  ]
+}

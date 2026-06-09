@@ -1,0 +1,96 @@
+name: Publish to PyPI
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements/dev-requirements.txt
+          python -m pip install -e .
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Check traceability matrix
+        run: python requirements/generate_traceability.py --check
+
+      - name: Validate examples
+        run: |
+          oaa-validator validate-dir examples/minimal
+          oaa-validator validate-dir examples/full
+          oaa-validator validate-dir examples/loc-multi-image
+          oaa-validator validate-dir examples/public-domain-synthetic
+
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+          python -m build
+          python -m twine check dist/*
+
+      - name: Smoke test wheel
+        run: |
+          python -m pip install dist/*.whl
+          oaa-validator validate-dir examples/minimal
+
+      - name: Upload distribution artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
+    environment:
+      name: pypi
+      url: https://pypi.org/p/oaa-validator
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Download distribution artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish package distributions
+        uses: pypa/gh-action-pypi-publish@release/v1
