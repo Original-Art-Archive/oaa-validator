@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oaa-validator"
-version = "0.1.1"
+version = "0.1.2"
 description = "Reference validator for the Original Art Archive (OAA) Format"
 readme = "README.md"
 requires-python = ">=3.11"
