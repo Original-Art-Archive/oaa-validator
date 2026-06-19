@@ -21,6 +21,6 @@ This example includes embedded reduced JPEG service files from the Library of Co
 
 ## License Boundary
 
-Remgrandt Games LLC dedicates the OAA manifests and example packaging in this directory to CC0 1.0.
+Remgrandt Works dedicates the OAA manifests and example packaging in this directory to CC0 1.0.
 
-Remgrandt Games LLC does not grant, waive, license, relicense, or otherwise clear rights in the embedded Library of Congress image files. Those files remain governed by the Library of Congress source record and rights advisory. Consult the Library of Congress source page for current source and rights information before reusing the embedded media outside this example.
+Remgrandt Works does not grant, waive, license, relicense, or otherwise clear rights in the embedded Library of Congress image files. Those files remain governed by the Library of Congress source record and rights advisory. Consult the Library of Congress source page for current source and rights information before reusing the embedded media outside this example.

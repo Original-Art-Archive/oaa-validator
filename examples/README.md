@@ -12,7 +12,7 @@ Example manifests use only valid OAA closed base values for `public_metadata.pub
 
 Do not commit real collector data. Real institutional fixture files may be used only when they have a clear public source, rights statement, and attribution.
 
-CC0 applies to example manifests, fixture packaging, and sample media created by Remgrandt Games LLC for this repository. Third-party or public-source media included or referenced by an example is not relicensed by Remgrandt Games LLC unless explicitly stated. For examples that include or derive from public-source media, check the example's `SOURCE.md` file for source and rights notes before reusing embedded media.
+CC0 applies to example manifests, fixture packaging, and sample media created by Remgrandt Works for this repository. Third-party or public-source media included or referenced by an example is not relicensed by Remgrandt Works unless explicitly stated. For examples that include or derive from public-source media, check the example's `SOURCE.md` file for source and rights notes before reusing embedded media.
 
 - `minimal/` shows the smallest useful manifest set.
 - `full/` shows richer provider metadata and extension block examples with synthetic image fixtures.

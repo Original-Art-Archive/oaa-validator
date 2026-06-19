@@ -6,7 +6,7 @@ The OAA format treats archives, manifests, and embedded files as untrusted input
 
 ## Reporting Security Issues
 
-If you discover a security issue in the OAA validator, fixtures, examples, requirements tooling, or related reference tooling, please report it privately to Remgrandt Games LLC.
+If you discover a security issue in the OAA validator, fixtures, examples, requirements tooling, or related reference tooling, please report it privately to Remgrandt Works.
 
 Use the security reporting mechanism provided by the repository host when available, or contact the maintainer directly.
 

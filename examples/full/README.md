@@ -22,6 +22,6 @@ artworks/
 
 Both example galleries reference the same artwork ID. The artwork folder includes an approved synthetic PNG fixture derived from public-domain comic material so its `files[]` entry resolves to an embedded archive file.
 
-See [SOURCE.md](SOURCE.md) for source and rights notes, including what Remgrandt Games LLC dedicates to CC0 and what remains governed by the linked source page.
+See [SOURCE.md](SOURCE.md) for source and rights notes, including what Remgrandt Works dedicates to CC0 and what remains governed by the linked source page.
 
 The artwork manifest credits Lou Fine for pencils and inks on the *Hit Comics #5* cover fixture.

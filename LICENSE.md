@@ -1,8 +1,10 @@
 # License
 
-Copyright © 2026 Remgrandt Games LLC.
+Copyright © 2026 Remgrandt Works.
 
-Remgrandt Games LLC maintains the Original Art Archive (OAA) Format reference validator and licenses the materials in this repository as described below.
+Remgrandt Works maintains the Original Art Archive (OAA) Format reference validator and licenses the materials in this repository as described below.
+
+Remgrandt Works is a trade name of Remgrandt Games LLC.
 
 ## Specification and Documentation
 
@@ -25,9 +27,9 @@ CC-BY-4.0
 
 ## Examples, Fixtures, and Sample Archives
 
-Example manifests, test fixtures, sample archives, and sample media created by Remgrandt Games LLC for this repository are dedicated to the public domain under CC0 1.0 Universal.
+Example manifests, test fixtures, sample archives, and sample media created by Remgrandt Works for this repository are dedicated to the public domain under CC0 1.0 Universal.
 
-Third-party or public-source media included or referenced by examples is not licensed, relicensed, dedicated to the public domain, or otherwise cleared by Remgrandt Games LLC unless explicitly stated. Those materials remain subject to their original source rights statements. See the applicable example directory for source and rights information.
+Third-party or public-source media included or referenced by examples is not licensed, relicensed, dedicated to the public domain, or otherwise cleared by Remgrandt Works unless explicitly stated. Those materials remain subject to their original source rights statements. See the applicable example directory for source and rights information.
 
 This includes, unless otherwise stated:
 
@@ -35,7 +37,7 @@ This includes, unless otherwise stated:
 - repository-authored materials in `tests/`
 - sample `.oaa` archives
 - sample manifests
-- sample media files created by Remgrandt Games LLC for this repository and used only as fixtures
+- sample media files created by Remgrandt Works for this repository and used only as fixtures
 
 SPDX identifier:
 
@@ -92,7 +94,7 @@ You may use the names "Original Art Archive" and "OAA" to truthfully describe co
 - "supports the OAA 0.1 Draft format"
 - "compatible with the Original Art Archive Format"
 
-You may not imply that your implementation, service, product, fork, archive, validator, or documentation is official, endorsed, certified, or maintained by the OAA project or Remgrandt Games LLC unless you have written permission.
+You may not imply that your implementation, service, product, fork, archive, validator, or documentation is official, endorsed, certified, or maintained by the OAA project or Remgrandt Works unless you have written permission.
 
 ## No Warranty
 

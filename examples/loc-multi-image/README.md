@@ -14,7 +14,7 @@ This example demonstrates one OAA artwork record with multiple embedded image fi
 
 The embedded JPEG files are downloaded from the Library of Congress public image service. The manifest keeps each file's Library of Congress reproduction number, handle, service image URL, and master TIFF URL in `files[].external_links[].extensions.gov.loc`.
 
-See [SOURCE.md](SOURCE.md) for the license boundary. Remgrandt Games LLC does not grant rights in the embedded Library of Congress media; consult the Library of Congress source page for current source and rights information.
+See [SOURCE.md](SOURCE.md) for the license boundary. Remgrandt Works does not grant rights in the embedded Library of Congress media; consult the Library of Congress source page for current source and rights information.
 
 ## Demonstrated Structure
 
