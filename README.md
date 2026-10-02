@@ -6,6 +6,8 @@
 
 # Original Art Archive Validator 1.0.0
 
+[![PyPI version](https://img.shields.io/pypi/v/oaa-validator)](https://pypi.org/project/oaa-validator/)
+
 Reference validator for the Original Art Archive (OAA) Format, manifest version
 `"1.0"`. It checks archive content and bounded processing; it does not certify
 another application's conformance, privacy, extraction, or preservation behavior.
