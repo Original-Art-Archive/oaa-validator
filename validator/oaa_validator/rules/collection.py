@@ -14,3 +14,4 @@ RULES = [
     RuleMetadata("collection.gallery_manifest_id_match", "Gallery manifest ID matches collection reference", ("OAA-COL-017",), Severity.FATAL),
     RuleMetadata("collection.artwork_manifest_id_match", "Artwork manifest ID matches collection reference", ("OAA-COL-021",), Severity.FATAL),
 ]
+

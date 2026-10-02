@@ -107,7 +107,12 @@ def build_archive(source_dir, archive_path, fixture=None):
             archive.write(mimetype, "mimetype", compress_type=mimetype_compression)
             seen_mimetype = True
         for entry in fixture.get("extra_archive_entries", []):
-            archive.writestr(entry["path"], entry.get("text", ""))
+            name = entry["path"]
+            if "unix_mode" in entry:
+                name = zipfile.ZipInfo(name)
+                name.create_system = 3
+                name.external_attr = entry["unix_mode"] << 16
+            archive.writestr(name, entry.get("text", ""))
         if "duplicate_archive_entry" in fixture:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", UserWarning)
@@ -243,7 +248,9 @@ class ValidatorFixtureTests(unittest.TestCase):
             tmp_path = Path(tmp)
             for fixture in fixtures:
                 with self.subTest(fixture=fixture["id"]):
-                    if fixture.get("kind") == "non_zip":
+                    if fixture.get("kind") == "missing_input":
+                        result = validate_directory(tmp_path / 'missing')
+                    elif fixture.get("kind") == "non_zip":
                         archive = tmp_path / "not-an-archive.oaa"
                         archive.write_text("not zip", encoding="utf-8")
                         result = validate_archive(archive)

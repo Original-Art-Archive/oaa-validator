@@ -8,4 +8,6 @@ RULES = [
     RuleMetadata("files.multiple_primary", "Artwork has at most one primary file", ("OAA-FILE-017",), Severity.WARNING),
     RuleMetadata("files.file_kind", "File kind uses closed base value set", ("OAA-FILE-018",), Severity.FATAL),
     RuleMetadata("files.image_role", "Image role uses closed base value set", ("OAA-FILE-019",), Severity.FATAL),
+    RuleMetadata("files.size_bytes", "Declared file size equals embedded length", ("OAA-FILE-020",), Severity.FATAL),
+    RuleMetadata("files.numeric_metadata", "File metadata has valid numeric values", ("OAA-FILE-021",), Severity.FATAL),
 ]

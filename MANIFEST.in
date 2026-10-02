@@ -1,0 +1,10 @@
+include CHANGELOG.md CONTRIBUTING.md SECURITY.md
+recursive-include LICENSES *
+recursive-include assets *
+recursive-include schema *.json *.md
+recursive-include requirements *.txt *.yaml *.md *.py
+recursive-include tests *.py *.md
+recursive-include tools *.py
+recursive-include examples * .oacollection .oagallery .oaartwork
+recursive-include validator *.py *.md *.json
+global-exclude __pycache__ *.py[cod]

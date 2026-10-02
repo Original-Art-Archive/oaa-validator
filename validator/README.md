@@ -1,80 +1,58 @@
 <!-- SPDX-License-Identifier: MIT -->
 
-# Validator
+# Reference Validator
 
-This directory contains the reference validator for the Original Art Archive (OAA) Format.
+This reference tool implements the **OAA 1.0**. It checks package structure, manifest JSON and field semantics, collection-authoritative references, embedded sizes, path safety, and bounded archive processing.
 
-The validator checks whether an OAA archive is valid according to OAA 0.1 Draft archive/content requirements: package structure, required manifest fields, manifest shape, archive path safety, manifest-local-path rejection, reference integrity, extension block shape, external link shape, and resource limits.
+It uses the local [1.0 schema](../schema/1.0/oaa-manifest.schema.json) plus archive-wide rules. It does not extract files, fetch URLs, open media, render metadata, publish content, or certify another reader/writer. Its diagnostics are local processing output, not a sanitized public collection export.
 
-The validator uses [../schema/oaa-manifest.schema.json](../schema/oaa-manifest.schema.json) through `jsonschema` for manifest-local JSON Schema validation, then applies custom checks for package structure, archive paths, cross-manifest references, embedded file resolution, resource limits, and other rules that cannot be validated from one manifest document alone.
+## Run
 
-It does not certify reader or writer implementation behavior. A writer can run its emitted archive through this validator to check whether the archive is valid, and a reader can use the validator as a preflight check before reading an archive. The validator does not extract archive contents to disk and does not open or render embedded media files.
-
-## Closed Base Value Checks
-
-The validator rejects unknown values in OAA closed base value sets:
-
-- Reject `files[].file_kind` values other than `raw`, `derivative`, and `supporting`.
-- Reject `files[].image_role` values other than `raw_scan`, `raw_photo`, `corrected_scan`, `detail`, `verso`, and `reference` when the field is present and not null.
-- Reject base `public_metadata.publication_status` values other than `published_art` and `unpublished_art` when the field is present and not null.
-
-Display-oriented strings such as `public_metadata.media`, `public_metadata.artwork_type`, `artist_credits[].role`, `public_metadata.for_sale_status`, and `files[].format` are not treated as controlled OAA values.
-
-## Severity Guide
-
-| Condition | Severity | Reader behavior |
-| --- | --- | --- |
-| Unknown or invalid `public_metadata.publication_status` | Fatal | Reject archive or affected artwork record. |
-| Unknown or invalid `files[].file_kind` | Fatal | Reject archive or affected artwork record. |
-| Unknown or invalid `files[].image_role` | Fatal | Reject archive or affected artwork record. |
-| Manifest does not match the OAA JSON Schema | Fatal | Reject archive or affected manifest record. |
-| Unknown extension block | Info | Ignore for interpretation and preserve when practical. |
-| Unknown external link provider | Info | Preserve and display generically when practical. |
-
-## Usage
-
-Validate an `.oaa` archive:
+Requires Python 3.12 or later (tested runtime is recorded in the [verification scope](../README.md#verification)) and the dependencies in [dev-requirements.txt](../requirements/dev-requirements.txt).
 
 ```powershell
+python -m pip install -r requirements/dev-requirements.txt
 python validator/oaa_validate.py validate path\to\archive.oaa
-```
-
-Validate a lab directory layout before packaging:
-
-```powershell
-python validator/oaa_validate.py validate-dir examples\minimal
-```
-
-Emit machine-readable output:
-
-```powershell
 python validator/oaa_validate.py validate-dir examples\minimal --json --show-info
 ```
 
-Exit codes:
+Directory mode is a convenience for already-unpacked layouts; it does not prove that a previous extractor was safe.
 
-| Code | Meaning |
+## Results
+
+JSON output includes `valid` (true, false, or null), `status`, `complete`, issue severities, and requirement IDs.
+
+| Status | Meaning |
 | --- | --- |
-| `0` | No fatal or error findings. |
-| `1` | Fatal or error findings were reported, or warnings were promoted with `--warnings-as-errors`. |
-| `2` | CLI usage error. |
+| `valid` | Completed the supported archive/content checks without a validity violation. |
+| `invalid` | A concrete validity violation was found; `complete` can still be false if checking stopped early. |
+| `unsupported` | Manifest version is not supported; no validity conclusion without a separate proven violation. |
+| `capacity_exceeded` | A configured processing limit was reached; not proof of invalidity. |
+| `io_error` | Input could not be completely read; not proof of invalidity. |
 
-## Traceability
+A proven invalidity takes precedence in `status` if an incomplete-processing finding also exists. The issue list retains both. This tool does not offer salvage/recovery mode.
 
-Validator findings include both `rule_id` and `requirement_ids`.
+| Exit | Meaning |
+| --- | --- |
+| 0 | Completed successfully (advisory warnings may exist). |
+| 1 | Invalid input, or warnings promoted by `--warnings-as-errors`. |
+| 2 | CLI usage error, including a missing input path. |
+| 3 | Unsupported or incomplete processing without a proven validity failure. |
 
-Requirement IDs are not embedded in [../SPEC.md](../SPEC.md). They live in [../requirements/oaa-0.1.yaml](../requirements/oaa-0.1.yaml), and [../requirements/traceability.md](../requirements/traceability.md) is generated from the catalog, rule metadata, and fixture metadata.
+Unknown providers and optional data are accepted. Closed base values remain enforced. Path-like prose is advisory, while unsafe actual references are invalid.
 
-Only archive-validity requirements may have automated validator rules. Reader, writer, round-trip, public-display, and implementation-behavior statements are excluded from automated validator scope unless they define a concrete archive/content condition.
+## Declared Capacities
 
-Refresh the traceability matrix:
+Defaults: archive 2 GiB; total uncompressed content 4 GiB; 100,000 entries; individual file 1 GiB; manifest 10 MiB; JSON nesting 100 containers; central directory 16 MiB. CLI `--max-*` options override these with positive integers; `--help` lists them. JSON integers are limited to 4,300 digits by this implementation.
 
-```powershell
-python requirements/generate_traceability.py
-```
+Directory metadata is bounded before constructing the ZIP entry table. Version dispatch reads only the fixed root `.oacollection`, under manifest, individual-file, total-size, and JSON limits, after refusing ambiguous, encrypted, or special root entries. This probe supports bounded Store, Deflate, and BZIP2 decoding; other root compression methods yield `unsupported` without attempting decompression. BZIP2 probe support does not make it valid in 1.0.
 
-Check that it is current:
+If the root declares an unsupported version, validation stops without reading other entries or imposing 1.0 container rules. This is not a safety or validity certification of the unread content. Once the root declares 1.0, paths, encryption, compression, special entries, and file/directory conflicts are checked before reading remaining payloads. Every file, including unreferenced extras, is then streamed with decompressed-size bounds and archive CRC verification. Trailing compressed-stream data is rejected at EOF, including at output-chunk boundaries.
 
-```powershell
-python requirements/generate_traceability.py --check
-```
+The bounded ZIP64 end-record preflight uses a private Python standard-library helper; keep the ZIP64 and malformed-input regressions passing when upgrading Python.
+
+## Scope and History
+
+The current validator implements manifest version `"1.0"` only. Version `"0.1"` is an unsupported input, not intrinsically invalid. The `v0.1.2` snapshot preserves the historical implementation, and [fixtures/0.1/cases.json](fixtures/0.1/cases.json) preserves its old mutation catalog.
+
+Rules and fixtures are mapped in [requirements/traceability.md](../requirements/traceability.md). Run the [test suite](../tests/README.md) before making a conformance claim.

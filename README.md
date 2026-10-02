@@ -1,96 +1,82 @@
-<!-- SPDX-License-Identifier: MIT -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
 <p align="center">
   <img src="assets/oaa-logo.svg" alt="Original Art Archive logo" width="180">
 </p>
 
-# Original Art Archive Validator
+# Original Art Archive Validator 1.0.0
 
-This repository contains the reference validator for the Original Art Archive (OAA) Format.
+Reference validator for the Original Art Archive (OAA) Format, manifest version
+`"1.0"`. It checks archive content and bounded processing; it does not certify
+another application's conformance, privacy, extraction, or preservation behavior.
 
-The validator checks whether an OAA archive is valid according to OAA 0.1 Draft archive/content requirements: package structure, required manifest fields, manifest shape, archive path safety, manifest-local-path rejection, reference integrity, extension block shape, external link shape, and resource limits.
+The authoritative specification is maintained in
+[Original-Art-Archive/oaa-spec](https://github.com/Original-Art-Archive/oaa-spec).
+This repository contains the validator, local schema copies, requirement catalogs,
+and test fixtures. The tests and source distribution run independently; format
+decisions and guidance belong in the specification repository.
 
-The validator uses [schema/oaa-manifest.schema.json](schema/oaa-manifest.schema.json) through `jsonschema` for manifest-local JSON Schema validation, then applies custom checks for package structure, archive paths, cross-manifest references, embedded file resolution, resource limits, and other rules that cannot be validated from one manifest document alone.
+## Install and run
 
-It does not certify reader or writer implementation behavior. A writer can run its emitted archive through this validator to check whether the archive is valid, and a reader can use the validator as a preflight check before reading an archive. The validator does not extract archive contents to disk and does not open or render embedded media files.
-
-The normative format specification is maintained in [Original-Art-Archive/oaa-spec](https://github.com/Original-Art-Archive/oaa-spec).
-
-## Installation
-
-Install from PyPI:
-
-```powershell
-python -m pip install oaa-validator
-```
-
-Install development dependencies from a source checkout:
+Requires Python 3.12 or later. Install the 1.0.0 release:
 
 ```powershell
-python -m pip install -r requirements\dev-requirements.txt
-python -m pip install -e .
-```
-
-## Usage
-
-Validate an `.oaa` archive:
-
-```powershell
+python -m pip install oaa-validator==1.0.0
 oaa-validator validate path\to\archive.oaa
+oaa-validator validate-dir path\to\collection --json
 ```
 
-Validate an unpacked OAA directory layout before packaging:
+The `oaa-validate` alias and `python -m oaa_validator` expose the same commands.
+No source checkout or network schema lookup is needed after installation.
+
+For a source checkout or unpacked source distribution:
 
 ```powershell
-oaa-validator validate-dir examples\minimal
-```
-
-Emit machine-readable output:
-
-```powershell
-oaa-validator validate-dir examples\minimal --json --show-info
-```
-
-Exit codes:
-
-| Code | Meaning |
-| --- | --- |
-| `0` | No fatal or error findings. |
-| `1` | Fatal or error findings were reported, or warnings were promoted with `--warnings-as-errors`. |
-| `2` | CLI usage error. |
-
-## Closed Base Value Checks
-
-The validator rejects unknown values in OAA closed base value sets:
-
-- Reject `files[].file_kind` values other than `raw`, `derivative`, and `supporting`.
-- Reject `files[].image_role` values other than `raw_scan`, `raw_photo`, `corrected_scan`, `detail`, `verso`, and `reference` when the field is present and not null.
-- Reject base `public_metadata.publication_status` values other than `published_art` and `unpublished_art` when the field is present and not null.
-
-Display-oriented strings such as `public_metadata.media`, `public_metadata.artwork_type`, `artist_credits[].role`, `public_metadata.for_sale_status`, and `files[].format` are not treated as controlled OAA values.
-
-## Traceability
-
-Validator findings include both `rule_id` and `requirement_ids`.
-
-Requirement IDs are not embedded in the public specification. They live in [requirements/oaa-0.1.yaml](requirements/oaa-0.1.yaml), and [requirements/traceability.md](requirements/traceability.md) is generated from the catalog, rule metadata, and fixture metadata.
-
-Only archive-validity requirements may have automated validator rules. Reader, writer, round-trip, public-display, and implementation-behavior statements are excluded from automated validator scope unless they define a concrete archive/content condition.
-
-Refresh the traceability matrix:
-
-```powershell
-python requirements/generate_traceability.py
-```
-
-Check that it is current:
-
-```powershell
+python -m pip install -r requirements/dev-requirements.txt
+python -m pip install -e .
+python -m unittest discover -s tests -p "test_*.py"
 python requirements/generate_traceability.py --check
 ```
 
-## Publishing
+## Results and scope
 
-This repository publishes the `oaa-validator` package to PyPI from `.github/workflows/publish.yml`.
+JSON reports include `valid`, `status`, `complete`, issue severities, and requirement
+IDs. Statuses distinguish `valid`, `invalid`, `unsupported`, `capacity_exceeded`,
+and `io_error`. Exit codes are 0 for success, 1 for invalid input or promoted
+warnings, 2 for CLI usage errors, and 3 for unsupported/incomplete processing
+without proven invalidity. Read the [full usage, limits, and result semantics](validator/README.md).
 
-Publishing uses PyPI Trusted Publishing through the `pypi` GitHub environment. No PyPI API token is stored in this repository.
+Version `"0.1"` is unsupported by this release, not intrinsically invalid. Use the
+historical `v0.1.2` release for the earlier implementation. The tool does not
+extract files, render media, fetch URLs, publish content, or migrate collections.
+Treat diagnostics as potentially private local output.
+
+See the [validator changelog](CHANGELOG.md),
+[1.0 specification](https://github.com/Original-Art-Archive/oaa-spec/blob/v1.0.0/SPEC.md),
+[migration guidance](https://github.com/Original-Art-Archive/oaa-spec/blob/v1.0.0/docs/migration-0.1-to-1.0.md),
+[traceability](requirements/traceability.md), and [license/marks policy](LICENSE.md).
+
+## Verification
+
+Release preparation passed 50 repository tests, requirements traceability,
+four packaged example archives, isolated installed-wheel checks, and the same
+suite from the unpacked source distribution without Git. The suite covers
+bounded archive processing, the 65,537-byte Deflate trailing-garbage regression,
+legacy BZIP2 version dispatch, and standalone package/schema loading.
+
+The catalog tracks 117 requirements, including 89 with automated rule and
+expected-finding coverage; fixtures define five valid cases and 77 mutations.
+Tests check source-byte preservation, reject extraction/network/process-launch
+calls in the privacy check, and check that private marker values stay out of
+diagnostics. Diagnostics can still contain private data.
+
+These checks used Windows and Python 3.12. They do not establish macOS/Linux
+verification, independent interoperability, or another application's conformance,
+extraction safety, privacy controls, or lossless preservation.
+
+## Maintainer publishing
+
+The existing GitHub release workflow builds and checks distributions before
+publishing through the `pypi` environment and PyPI Trusted Publishing.
+A manual workflow run tests/builds only; publishing requires a stable GitHub
+release whose tag matches the package version. No API token is stored here.

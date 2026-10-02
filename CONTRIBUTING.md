@@ -1,42 +1,33 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 
-# Contributing
+# Contributing to the Validator
 
-OAA is currently a 0.1 Draft format. Validator changes should be proposed and reviewed against the public specification, archive validity, reader safety, and backward compatibility.
+This repository maintains the reference validator, its packaging, tests, and supporting fixtures for OAA manifest version `"1.0"`.
 
 ## Contribution Licensing
 
-By contributing to this repository, you agree that your contribution is licensed under the same license that applies to the file or directory you are modifying.
+By contributing, you agree to the license that applies to the file or directory you modify:
 
-For example:
+- Documentation is CC BY 4.0 unless otherwise stated.
+- Repository-authored examples and tests are CC0 1.0.
+- Machine-readable schemas are CC0 1.0, or alternatively MIT when incorporated into software.
+- Validator code, tools, and other software are MIT.
 
-- Contributions to `README.md`, `requirements/`, or other documentation are licensed under CC BY 4.0.
-- Contributions to `examples/` or `tests/` are dedicated under CC0 1.0.
-- Contributions to validator code, tools, scripts, or other software are licensed under MIT.
-
-Do not contribute material unless you have the right to license it under the applicable license.
+Only contribute material you have the right to license. Preserve third-party fixture attribution and the [names-and-marks policy](LICENSE.md#names-and-marks).
 
 ## Validator Changes
 
-Format changes belong in the [OAA specification repository](https://github.com/Original-Art-Archive/oaa-spec). This repository should track the current public draft and validate archive/content requirements from that specification.
+For a bug report, include a minimal synthetic reproducer, the validator version, expected and actual results, and relevant capacity settings. Do not attach private collector data or unredacted diagnostics.
 
-Changes that affect validation behavior should update these files together:
+For a fix, add a focused regression and update affected rules, fixtures, result documentation, and packaging as needed. Keep the [test suite](tests/README.md) and [requirements traceability](requirements/README.md) passing:
 
-- [examples/](examples/)
-- [validator/](validator/)
-- [requirements/](requirements/)
-- [tests/](tests/)
+```powershell
+python -m unittest discover -s tests -p "test_*.py"
+python requirements/generate_traceability.py --check
+```
 
-## Review Criteria
+Review bounded processing, version dispatch, deterministic findings, privacy, and offline installed-package behavior. Test results establish this tool's behavior, not another application's conformance or extraction safety.
 
-Reviewers should evaluate:
+## Format Changes
 
-- Whether the change preserves safe archive validation.
-- Whether runtime dependencies remain minimal and justified.
-- Whether every emitted finding includes requirement IDs.
-- Whether examples, fixtures, and traceability remain aligned with the public spec.
-- Whether private collector metadata remains private by default.
-
-## Draft Compatibility
-
-Versions before 1.0 may change incompatibly, but draft changes should still document their compatibility impact.
+Propose changes to manifest fields, archive requirements, schemas, or conformance rules in the separate [specification repository](https://github.com/Original-Art-Archive/oaa-spec/blob/main/CONTRIBUTING.md). Do not introduce new format rules through validator behavior alone. Update local schema and requirement-catalog copies only in coordination with accepted upstream changes.

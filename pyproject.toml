@@ -4,22 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oaa-validator"
-version = "0.1.2"
+version = "1.0.0"
 description = "Reference validator for the Original Art Archive (OAA) Format"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = "MIT"
-license-files = ["LICENSE.md", "LICENSES/MIT.txt", "LICENSES/CC0-1.0.txt"]
+license-files = ["LICENSE.md", "LICENSES/MIT.txt", "LICENSES/CC0-1.0.txt", "LICENSES/CC-BY-4.0.txt"]
 authors = [
   { name = "Remgrandt Works" }
 ]
 keywords = ["oaa", "original-art-archive", "validator", "archive"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 5 - Production/Stable",
   "Environment :: Console",
   "Intended Audience :: Developers",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Topic :: File Formats",

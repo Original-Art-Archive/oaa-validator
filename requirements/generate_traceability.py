@@ -17,7 +17,7 @@ from validator.oaa_validator.rules import rule_map
 
 
 def load_catalog() -> dict:
-    with (ROOT / "requirements" / "oaa-0.1.yaml").open("r", encoding="utf-8") as handle:
+    with (ROOT / "requirements" / "oaa-1.0.yaml").open("r", encoding="utf-8") as handle:
         return yaml.safe_load(handle)
 
 
@@ -50,9 +50,9 @@ def render() -> str:
     lines = [
         "<!-- SPDX-License-Identifier: CC-BY-4.0 -->",
         "",
-        "# OAA 0.1 Traceability Matrix",
+        "# OAA 1.0 Traceability Matrix",
         "",
-        "Generated from `requirements/oaa-0.1.yaml`, validator rule metadata, and fixture metadata.",
+        "Generated from `requirements/oaa-1.0.yaml`, validator rule metadata, and fixture metadata.",
         "",
         "| Requirement | Level | Coverage | Spec Section | Validator Rule | Severity | Fixtures |",
         "| --- | --- | --- | --- | --- | --- | --- |",
@@ -100,3 +100,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

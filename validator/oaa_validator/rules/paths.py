@@ -6,3 +6,4 @@ RULES = [
     RuleMetadata("paths.nfc", "Archive paths are NFC", ("OAA-PATH-010",), Severity.WARNING),
     RuleMetadata("paths.manifest_path_safe", "Manifest path is safe and archive-relative", ("OAA-MAN-015", "OAA-COL-016", "OAA-COL-020"), Severity.FATAL),
 ]
+

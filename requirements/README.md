@@ -2,19 +2,17 @@
 
 # Requirements Traceability
 
-The OAA specification is written for human readers and does not include visible requirement IDs inline.
+The normative rules are in the [upstream 1.0 specification](https://github.com/Original-Art-Archive/oaa-spec/blob/v1.0.0/SPEC.md). The supporting [oaa-1.0.yaml](oaa-1.0.yaml) catalog assigns stable requirement IDs; [traceability.md](traceability.md) maps them to validator rules and fixtures. The [0.1 catalog](oaa-0.1.yaml) remains unchanged for historical use, with its [historical specification](https://github.com/Original-Art-Archive/oaa-spec/blob/v0.1.2/SPEC.md).
 
-Normative requirements used by the validator are tracked in [oaa-0.1.yaml](oaa-0.1.yaml).
+These are unchanged copies of the specification's catalogs. Their `source_spec` and `source.file` paths describe provenance within the upstream specification repository at the matching version, not files in this repository. Tests use requirement IDs, sections, and classifications without opening a local `SPEC.md`; no specification checkout or network lookup is required.
 
-The generated traceability matrix in [traceability.md](traceability.md) maps OAA requirement IDs to specification sections, validator rules, and conformance fixtures.
+Automated rules cover archive/content conditions and explicitly classified processing outcomes. Processing findings (unsupported version, configured capacity, unavailable input) are not archive-invalidity findings. Reader, writer, privacy, and other behavior that cannot be inferred from an archive is tracked separately; see the [verification scope](../README.md#verification).
 
-The validator catalog is scoped to archive validity. Reader, writer, round-trip, public-display, and implementation-behavior statements from the specification are tracked as excluded context unless they define a concrete archive/content condition that the validator can evaluate.
+The tests require every automated requirement to have rule and expected-finding fixture coverage, and every finding to reference known requirement IDs. Fixture coverage does not prove another application's implementation behavior.
 
-Validator tests are requirement-driven:
+Regenerate and check the matrix:
 
-- Every automated requirement MUST be an archive/content validity requirement.
-- Every automated requirement MUST map to at least one validator rule.
-- Every validator rule MUST reference at least one cataloged requirement.
-- Every validator rule MUST reference only automated archive-validity requirements.
-- Every emitted validator issue MUST include requirement IDs.
-- Every expected fixture finding MUST reference known rule and requirement IDs.
+```powershell
+python requirements/generate_traceability.py
+python requirements/generate_traceability.py --check
+```

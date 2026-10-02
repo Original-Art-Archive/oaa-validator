@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from collections import Counter
 from functools import cache
+from datetime import date
+from decimal import Decimal, InvalidOperation
+from urllib.parse import urlsplit
+import zlib
 from pathlib import Path
 from typing import Any
 import json
@@ -9,16 +13,18 @@ import re
 import unicodedata
 import zipfile
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, validators
 
 from .model import Limits, Severity, ValidationIssue, ValidationResult
 from .rules import rule_map
-from .source import OaaSource, load_archive, load_directory
+from .source import CapacityExceeded, OaaSource, UnsupportedCompression, load_archive, load_directory
 
 MIMETYPE = b"application/vnd.original-art-archive+zip"
-SUPPORTED_SCHEMA = "0.1"
-PACKAGE_SCHEMA_PATH = Path(__file__).resolve().parent / "schema" / "oaa-manifest.schema.json"
-REPO_SCHEMA_PATH = Path(__file__).resolve().parents[2] / "schema" / "oaa-manifest.schema.json"
+SUPPORTED_SCHEMA = "1.0"
+ROOT = Path(__file__).resolve().parents[2]
+MANIFEST_SCHEMA_PATH = ROOT / "schema" / "1.0" / "oaa-manifest.schema.json"
+if not MANIFEST_SCHEMA_PATH.is_file():
+    MANIFEST_SCHEMA_PATH = Path(__file__).resolve().parent / "schema" / "oaa-manifest.schema.json"
 SUPPORTED_COMPRESSION = {zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED}
 KNOWN_PROVIDERS = {
     "app.oa-curator",
@@ -42,7 +48,7 @@ ARTWORK_BASE_FIELDS = {"schema_version", "id", "title", "external_links", "publi
 PUBLIC_METADATA_BASE_FIELDS = {"description", "for_sale_status", "media", "artwork_type", "publication_status", "is_public", "artist_credits"}
 ARTIST_CREDIT_BASE_FIELDS = {"display_name", "first_name", "last_name", "role"}
 PRIVATE_METADATA_BASE_FIELDS = {"purchase_price", "estimated_value", "purchase_date", "provenance", "personal_notes"}
-FILE_BASE_FIELDS = {"id", "file_name", "relative_path", "file_kind", "size_bytes", "width", "height", "format", "media_type", "is_primary", "image_role", "external_links"}
+FILE_BASE_FIELDS = {"id", "file_name", "relative_path", "file_kind", "size_bytes", "width", "height", "dpi_x", "dpi_y", "format", "media_type", "is_primary", "image_role", "external_links"}
 EXTERNAL_LINK_BASE_FIELDS = {"provider", "id", "url"}
 MUTABLE_GALLERY_ARTWORK_FIELDS = {
     "title",
@@ -56,6 +62,9 @@ MUTABLE_GALLERY_ARTWORK_FIELDS = {
 PROVIDER_RE = re.compile(r"^[a-z0-9._-]+$")
 LOCAL_PATH_RE = re.compile(r"(^[A-Za-z]:[\\/])|(^\\\\)|(^file://)|(^/(Users|home|var|tmp|Volumes|mnt|opt|etc)(/|$))")
 RULES = rule_map()
+SCHEMA_VALIDATOR = validators.extend(Draft202012Validator, type_checker=Draft202012Validator.TYPE_CHECKER.redefine(
+    "integer", lambda checker, value: not isinstance(value, bool) and (
+        isinstance(value, int) or isinstance(value, Decimal) and value.is_finite() and value == value.to_integral_value())))
 
 
 class DuplicateMemberError(ValueError):
@@ -85,62 +94,83 @@ def issue(
 
 
 def validate_archive(path: str | Path, limits: Limits | None = None) -> ValidationResult:
-    archive_path = Path(path)
-    result = ValidationResult(input=archive_path, mode="archive")
-    limits = limits or Limits()
+    return validate_input(Path(path), "archive", limits or Limits())
 
-    if archive_path.suffix.lower() != ".oaa":
-        result.add(issue("package.extension_oaa", "Archive filesystem name does not use the `.oaa` extension.", str(archive_path)))
 
-    if archive_path.exists() and archive_path.is_file() and archive_path.stat().st_size > limits.max_archive_size:
-        result.add(issue("security.resource_limits", "Archive exceeds the configured archive size limit.", str(archive_path)))
-
-    source = load_archive(archive_path)
-    if source.archive_error is not None:
-        result.add(issue("package.archive_readable", "Input is not a readable ZIP-compatible OAA archive.", str(archive_path)))
-        return result
-    validate_source(source, result, limits)
+def validate_input(path: Path, mode: str, limits: Limits) -> ValidationResult:
+    result = ValidationResult(input=path, mode=mode)
+    source = None
+    if mode == "archive" and path.suffix.lower() != ".oaa":
+        result.add(issue("package.extension_oaa", "Archive filesystem name does not use the .oaa extension.", str(path)))
+    try:
+        source = load_archive(path, limits) if mode == "archive" else load_directory(path, limits)
+        validate_source(source, result, limits)
+    except CapacityExceeded as exc:
+        result.processing_status = "capacity_exceeded"
+        result.add(issue("security.resource_limits", str(exc), str(path)))
+    except UnsupportedCompression as exc:
+        result.processing_status = "unsupported"
+        result.add(issue("manifests.schema_version_supported", str(exc), ".oacollection"))
+    except (RecursionError, InvalidOperation):
+        result.processing_status = "capacity_exceeded"
+        result.add(issue("security.resource_limits", "Input exceeds parser numeric or nesting capacity.", str(path)))
+    except OSError:
+        result.processing_status = "io_error"
+        result.add(issue("security.input_unavailable", "Input could not be completely read.", str(path)))
+    except (zipfile.BadZipFile, zlib.error, EOFError, ValueError, RuntimeError, NotImplementedError):
+        result.add(issue("package.archive_readable", "Input contains unreadable or malformed archive content.", str(path)))
+    finally:
+        if source is not None:
+            source.close()
     return result
-
 
 def validate_directory(path: str | Path, limits: Limits | None = None) -> ValidationResult:
-    directory = Path(path)
-    result = ValidationResult(input=directory, mode="directory")
-    limits = limits or Limits()
-    source = load_directory(directory)
-    validate_source(source, result, limits)
-    return result
-
+    return validate_input(Path(path), "directory", limits or Limits())
 
 def validate_source(source: OaaSource, result: ValidationResult, limits: Limits) -> None:
     check_resource_limits(source, result, limits)
-    if source.mode == "archive":
-        check_archive_package(source, result)
-    check_paths(source, result)
-    check_mimetype(source, result)
-
-    manifests = parse_manifests(source, result, limits)
-    collection = manifests.get(".oacollection")
+    # Probe only the fixed root under bounded reads before applying 1.0 rules.
+    # Other entries are never opened if the root declares an unsupported version.
+    if ".oacollection" in source.duplicate_paths:
+        result.add(issue("package.duplicate_entries", "Ambiguous duplicate root manifest.", ".oacollection"))
+        return
+    root_entry = next((entry for entry in source.entries if entry.path == ".oacollection"), None)
+    if root_entry is not None and (root_entry.encrypted or root_entry.unsafe_type):
+        rule = "package.encrypted_entries" if root_entry.encrypted else "package.entry_type"
+        result.add(issue(rule, "Root manifest cannot be safely read.", ".oacollection"))
+        return
+    collection = parse_manifest(source, result, ".oacollection", limits)
     if collection is None:
         if source.has_file(".oacollection"):
             return
         result.add(issue("collection.manifest_present", "Archive is missing the root `.oacollection` manifest.", ".oacollection"))
         return
+    if collection.get("schema_version") != SUPPORTED_SCHEMA:
+        return
 
-    validate_collection(source, result, manifests, collection)
+    preflight = ValidationResult(input=result.input, mode=result.mode)
+    if source.mode == "archive":
+        check_archive_package(source, preflight)
+    check_paths(source, preflight)
+    result.extend(preflight.issues)
+    if preflight.valid is False:
+        return
+    source.verify_content()
+    check_mimetype(source, result)
+    manifests = parse_manifests(source, result, limits, collection)
+
+    if result.processing_status != "unsupported":
+        validate_collection(source, result, manifests, collection)
+        result.completed = True
 
 
 def check_resource_limits(source: OaaSource, result: ValidationResult, limits: Limits) -> None:
     if len(source.entries) > limits.max_entries:
-        result.add(issue("security.resource_limits", "Archive entry count exceeds the configured limit.", str(source.root)))
-    total = 0
-    for entry in source.entries:
-        total += entry.file_size
-        if entry.file_size > limits.max_entry_size:
-            result.add(issue("security.resource_limits", "Archive entry exceeds the configured individual file size limit.", entry.path))
-    if total > limits.max_uncompressed_size:
-        result.add(issue("security.resource_limits", "Archive uncompressed size exceeds the configured limit.", str(source.root)))
-
+        raise CapacityExceeded("Archive entry count exceeds configured limit")
+    if any(entry.file_size > limits.max_entry_size for entry in source.entries):
+        raise CapacityExceeded("Archive entry exceeds configured individual file size limit")
+    if sum(entry.file_size for entry in source.entries) > limits.max_uncompressed_size:
+        raise CapacityExceeded("Archive uncompressed size exceeds configured limit")
 
 def check_archive_package(source: OaaSource, result: ValidationResult) -> None:
     for duplicate in sorted(source.duplicate_paths):
@@ -163,18 +193,18 @@ def check_archive_package(source: OaaSource, result: ValidationResult) -> None:
 
 
 def check_paths(source: OaaSource, result: ValidationResult) -> None:
-    lower_seen: dict[str, str] = {}
+    files = {entry.path for entry in source.entries if not entry.is_dir}
     for entry in source.entries:
-        problems = archive_path_problems(entry.path, allow_directory=entry.is_dir)
-        for problem in problems:
+        for problem in archive_path_problems(entry.path, allow_directory=entry.is_dir):
             result.add(issue("paths.safe_archive_path", problem, entry.path))
+        if entry.unsafe_type:
+            result.add(issue("package.entry_type", "Entry is not a regular file or directory.", entry.path))
+        parts = entry.path.rstrip("/").split("/")
+        if ((entry.is_dir and entry.path.rstrip("/") in files)
+                or any("/".join(parts[:index]) in files for index in range(1, len(parts)))):
+            result.add(issue("package.path_conflict", "Entry has a file/directory path conflict.", entry.path))
         if unicodedata.normalize("NFC", entry.path) != entry.path:
             result.add(issue("paths.nfc", "Archive entry path is not Unicode NFC.", entry.path))
-        lowered = entry.path.lower()
-        if lowered in lower_seen and lower_seen[lowered] != entry.path:
-            continue
-        lower_seen[lowered] = entry.path
-
 
 def archive_path_problems(path: str, *, allow_directory: bool = False) -> list[str]:
     problems: list[str] = []
@@ -182,8 +212,10 @@ def archive_path_problems(path: str, *, allow_directory: bool = False) -> list[s
         return ["Archive entry path is empty."]
     if "\\" in path:
         problems.append("Archive entry path contains a backslash separator.")
-    if path.startswith("/"):
-        problems.append("Archive entry path is absolute.")
+    if path.startswith("/") or re.match(r"^[A-Za-z]:", path):
+        problems.append("Archive entry path is absolute or drive-relative.")
+    if "\x00" in path:
+        problems.append("Archive entry path contains a NUL character.")
     parts = path.split("/")
     for index, part in enumerate(parts):
         if part == "" and not (allow_directory and index == len(parts) - 1):
@@ -199,8 +231,6 @@ def manifest_path_problems(path: Any) -> list[str]:
     if not isinstance(path, str):
         return ["Manifest path is not a string."]
     problems = archive_path_problems(path)
-    if path != path.strip():
-        problems.append("Manifest path contains leading or trailing whitespace and is not trimmed before resolution.")
     return problems
 
 
@@ -208,22 +238,23 @@ def check_mimetype(source: OaaSource, result: ValidationResult) -> None:
     if not source.has_file("mimetype"):
         result.add(issue("package.mimetype_present", "Archive is missing required root `mimetype` file.", "mimetype"))
         return
-    data = source.read_bytes("mimetype")
+    if source.size("mimetype") != len(MIMETYPE):
+        result.add(issue("package.mimetype_value", "Root mimetype value is not exact.", "mimetype"))
+        return
+    data = source.read_bytes("mimetype", len(MIMETYPE))
     if data != MIMETYPE:
         result.add(issue("package.mimetype_value", "Root `mimetype` value is not exact.", "mimetype"))
 
 
-def parse_manifests(source: OaaSource, result: ValidationResult, limits: Limits) -> dict[str, dict[str, Any] | None]:
+def parse_manifests(source: OaaSource, result: ValidationResult, limits: Limits,
+                    collection_data: dict[str, Any]) -> dict[str, dict[str, Any] | None]:
     paths = [".oacollection"]
-    collection_data = parse_manifest(source, result, ".oacollection", limits)
     manifests: dict[str, dict[str, Any] | None] = {".oacollection": collection_data}
-    if not isinstance(collection_data, dict):
-        return manifests
     for ref_type in ("galleries", "artworks"):
         for ref in collection_data.get(ref_type, []) if isinstance(collection_data.get(ref_type), list) else []:
             if isinstance(ref, dict) and isinstance(ref.get("path"), str):
                 paths.append(ref["path"])
-    for path in paths[1:]:
+    for path in dict.fromkeys(paths[1:]):
         manifests[path] = parse_manifest(source, result, path, limits)
 
     versions = {
@@ -231,7 +262,7 @@ def parse_manifests(source: OaaSource, result: ValidationResult, limits: Limits)
         for path, manifest in manifests.items()
         if isinstance(manifest, dict) and "schema_version" in manifest
     }
-    if len(set(versions.values())) > 1:
+    if len({value for value in versions.values() if isinstance(value, str)}) > 1:
         for path in versions:
             result.add(issue("manifests.same_schema_versions", "Manifest schema versions in this archive do not all match.", path, manifest=path))
     return manifests
@@ -240,11 +271,9 @@ def parse_manifests(source: OaaSource, result: ValidationResult, limits: Limits)
 def parse_manifest(source: OaaSource, result: ValidationResult, path: str, limits: Limits) -> dict[str, Any] | None:
     if not source.has_file(path):
         return None
-    entry = next((item for item in source.entries if item.path == path), None)
-    if entry is not None and entry.file_size > limits.max_manifest_size:
-        result.add(issue("security.resource_limits", "Manifest exceeds the configured manifest size limit.", path, manifest=path))
-        return None
-    raw = source.read_bytes(path)
+    if source.size(path) > limits.max_manifest_size:
+        raise CapacityExceeded("Manifest exceeds configured manifest size limit")
+    raw = source.read_bytes(path, limits.max_manifest_size)
     if raw is None:
         result.add(issue("manifests.json_object", "Manifest cannot be read as UTF-8 JSON.", path, manifest=path))
         return None
@@ -252,19 +281,22 @@ def parse_manifest(source: OaaSource, result: ValidationResult, path: str, limit
         result.add(issue("manifests.byte_order_mark", "Manifest starts with a byte order mark.", path, manifest=path))
     try:
         text = raw.decode("utf-8-sig")
-        data = json.loads(text, object_pairs_hook=reject_duplicate_members)
+        check_json_nesting(text, limits.max_json_depth)
+        data = json.loads(text, object_pairs_hook=reject_duplicate_members,
+                          parse_constant=reject_json_constant, parse_float=Decimal, parse_int=bounded_integer)
     except DuplicateMemberError as exc:
         result.add(issue("manifests.duplicate_json_members", str(exc), path, manifest=path))
         return None
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        result.add(issue("manifests.json_object", f"Manifest is not valid UTF-8 JSON: {exc}", path, manifest=path))
+    except CapacityExceeded:
+        raise
+    except (UnicodeDecodeError, ValueError) as exc:
+        result.add(issue("manifests.json_object", "Manifest is not valid UTF-8 JSON.", path, manifest=path))
         return None
     if not isinstance(data, dict):
         result.add(issue("manifests.json_object", "Manifest top level is not a JSON object.", path, manifest=path))
         return None
-    if json_depth(data) > limits.max_json_depth:
-        result.add(issue("security.resource_limits", "Manifest JSON nesting depth exceeds configured limit.", path, manifest=path))
-    validate_schema_version(result, data, path)
+    if not validate_schema_version(result, data, path):
+        return data
     validate_manifest_schema(result, data, path)
     scan_manifest_for_local_paths(result, data, path, "")
     return data
@@ -272,28 +304,25 @@ def parse_manifest(source: OaaSource, result: ValidationResult, path: str, limit
 
 @cache
 def manifest_schema() -> dict[str, Any]:
-    for path in (PACKAGE_SCHEMA_PATH, REPO_SCHEMA_PATH):
-        if path.is_file():
-            with path.open("r", encoding="utf-8") as handle:
-                return json.load(handle)
-    raise FileNotFoundError("Could not locate bundled OAA manifest JSON Schema.")
+    with MANIFEST_SCHEMA_PATH.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
 
 
 @cache
 def manifest_schema_validator(kind: str) -> Draft202012Validator:
     schema = manifest_schema()
     branch_by_kind = {
-        "collection": schema["oneOf"][0],
-        "gallery": schema["oneOf"][1],
-        "artwork": schema["oneOf"][2],
+        "collection": {"$ref": "#/$defs/collectionManifest"},
+        "gallery": {"$ref": "#/$defs/galleryManifest"},
+        "artwork": {"$ref": "#/$defs/artworkManifest"},
     }
     selected_schema = {
         "$schema": schema["$schema"],
         "$defs": schema["$defs"],
-        **branch_by_kind.get(kind, {"oneOf": schema["oneOf"]}),
+        **branch_by_kind.get(kind, {"anyOf": schema["anyOf"]}),
     }
     Draft202012Validator.check_schema(selected_schema)
-    return Draft202012Validator(selected_schema)
+    return SCHEMA_VALIDATOR(selected_schema)
 
 
 def manifest_kind_from_path(path: str) -> str:
@@ -310,7 +339,7 @@ def validate_manifest_schema(result: ValidationResult, manifest: dict[str, Any],
     validator = manifest_schema_validator(manifest_kind_from_path(path))
     errors = sorted(
         validator.iter_errors(manifest),
-        key=lambda error: (list(error.absolute_path), error.message),
+        key=lambda error: (json_pointer(error.absolute_path), error.validator),
     )
     for error in errors:
         pointer = json_pointer(error.absolute_path)
@@ -318,7 +347,7 @@ def validate_manifest_schema(result: ValidationResult, manifest: dict[str, Any],
         result.add(
             issue(
                 "manifests.field_type",
-                f"Manifest does not match the OAA JSON Schema{location}: {error.message}",
+                f"Manifest does not match the OAA JSON Schema{location} ({error.validator}).",
                 path,
                 manifest=path,
                 json_pointer=pointer,
@@ -335,21 +364,49 @@ def reject_duplicate_members(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return output
 
 
-def json_depth(value: Any) -> int:
-    if isinstance(value, dict):
-        return 1 + max((json_depth(item) for item in value.values()), default=0)
-    if isinstance(value, list):
-        return 1 + max((json_depth(item) for item in value), default=0)
-    return 1
+def reject_json_constant(value: str):
+    raise ValueError("Non-JSON numeric token")
 
 
-def validate_schema_version(result: ValidationResult, manifest: dict[str, Any], path: str) -> None:
+def bounded_integer(value: str):
+    if len(value.lstrip("-")) > 4300:
+        raise CapacityExceeded("JSON integer exceeds supported 4300-digit parser capacity")
+    return int(value)
+
+
+def check_json_nesting(text: str, maximum: int) -> None:
+    depth = 0
+    quoted = escaped = False
+    for char in text:
+        if quoted:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                quoted = False
+        elif char == '"':
+            quoted = True
+        elif char in "[{":
+            depth += 1
+            if depth > maximum:
+                raise CapacityExceeded("Manifest JSON nesting depth exceeds configured limit")
+        elif char in "]}":
+            depth -= 1
+
+def validate_schema_version(result: ValidationResult, manifest: dict[str, Any], path: str) -> bool:
     if "schema_version" not in manifest:
-        result.add(issue("manifests.schema_version_required", "Manifest is missing `schema_version`.", path, manifest=path))
-        return
-    if manifest["schema_version"] != SUPPORTED_SCHEMA:
-        result.add(issue("manifests.schema_version_supported", "Manifest `schema_version` is not supported by this validator.", path, manifest=path))
-
+        result.add(issue("manifests.schema_version_required", "Manifest is missing schema_version.", path, manifest=path))
+        return False
+    version = manifest["schema_version"]
+    if not isinstance(version, str) or not version.strip():
+        result.add(issue("manifests.field_type", "schema_version must be a nonblank string.", path, manifest=path))
+        return False
+    if version != SUPPORTED_SCHEMA:
+        result.processing_status = "unsupported"
+        result.add(issue("manifests.schema_version_supported", "Manifest schema_version is not supported by this validator.", path, manifest=path))
+        return False
+    return True
 
 def validate_collection(source: OaaSource, result: ValidationResult, manifests: dict[str, dict[str, Any] | None], collection: dict[str, Any]) -> None:
     validate_unknown_optional_fields(result, collection, ".oacollection", COLLECTION_BASE_FIELDS | {"extensions"})
@@ -371,6 +428,7 @@ def validate_collection(source: OaaSource, result: ValidationResult, manifests: 
     gallery_refs = validate_collection_refs(result, galleries, ".oacollection", "gallery")
     artwork_refs = validate_collection_refs(result, artworks, ".oacollection", "artwork")
     collection_artwork_ids = {ref["id"] for ref in artwork_refs if isinstance(ref.get("id"), str)}
+    interpreted = set()
 
     for ref in gallery_refs:
         path = ref.get("path")
@@ -381,7 +439,9 @@ def validate_collection(source: OaaSource, result: ValidationResult, manifests: 
             continue
         manifest = manifests.get(path)
         if isinstance(manifest, dict):
-            validate_gallery(result, manifest, path, collection_artwork_ids)
+            if ("gallery", path) not in interpreted:
+                validate_gallery(result, manifest, path, collection_artwork_ids)
+                interpreted.add(("gallery", path))
             if manifest.get("id") != ref.get("id"):
                 result.add(issue("collection.gallery_manifest_id_match", "Gallery manifest `id` does not match collection reference.", path, manifest=path, json_pointer="/id"))
 
@@ -394,7 +454,9 @@ def validate_collection(source: OaaSource, result: ValidationResult, manifests: 
             continue
         manifest = manifests.get(path)
         if isinstance(manifest, dict):
-            validate_artwork(source, result, manifest, path)
+            if ("artwork", path) not in interpreted:
+                validate_artwork(source, result, manifest, path)
+                interpreted.add(("artwork", path))
             if manifest.get("id") != ref.get("id"):
                 result.add(issue("collection.artwork_manifest_id_match", "Artwork manifest `id` does not match collection reference.", path, manifest=path, json_pointer="/id"))
 
@@ -493,6 +555,14 @@ def validate_artwork(source: OaaSource, result: ValidationResult, manifest: dict
         result.add(issue("artwork.private_metadata_object", "Artwork `private_metadata` is not an object.", path, manifest=path, json_pointer="/private_metadata"))
     elif isinstance(private_metadata, dict):
         validate_extensions(result, private_metadata.get("extensions"), path, "/private_metadata/extensions", private_metadata, PRIVATE_METADATA_BASE_FIELDS)
+        value = private_metadata.get("purchase_date")
+        if isinstance(value, str):
+            try:
+                if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+                    raise ValueError("date shape")
+                date.fromisoformat(value)
+            except ValueError:
+                result.add(issue("manifests.calendar_date", "Base date is not a real YYYY-MM-DD calendar date.", path, manifest=path, json_pointer="/private_metadata/purchase_date"))
 
     files = manifest.get("files")
     if not isinstance(files, list):
@@ -503,7 +573,7 @@ def validate_artwork(source: OaaSource, result: ValidationResult, manifest: dict
 
 def validate_public_metadata(result: ValidationResult, data: dict[str, Any], manifest: str) -> None:
     status = data.get("publication_status")
-    if status is not None and status not in {"published_art", "unpublished_art"}:
+    if status is not None and (not isinstance(status, str) or status not in {"published_art", "unpublished_art"}):
         result.add(issue("artwork.publication_status", "Base `publication_status` is not an allowed OAA value.", manifest, manifest=manifest, json_pointer="/public_metadata/publication_status"))
     artist_credits = data.get("artist_credits", [])
     if artist_credits is not None and not isinstance(artist_credits, list):
@@ -529,6 +599,17 @@ def validate_files(source: OaaSource, result: ValidationResult, files: list[Any]
             result.add(issue("files.entries_objects", "`files[]` entry is not an object.", artwork_manifest, manifest=artwork_manifest, json_pointer=pointer))
             continue
         validate_required_string(result, file_entry, "id", artwork_manifest, f"{pointer}/id")
+        for field in ("size_bytes", "width", "height", "dpi_x", "dpi_y"):
+            value = file_entry.get(field)
+            if value is None:
+                continue
+            numeric = not isinstance(value, bool) and isinstance(value, (int, Decimal))
+            numeric = numeric and (not isinstance(value, Decimal) or value.is_finite())
+            valid = numeric and (value >= 0 if field == "size_bytes" else value > 0)
+            if field in {"size_bytes", "width", "height"}:
+                valid = valid and (not isinstance(value, Decimal) or value == value.to_integral_value())
+            if not valid:
+                result.add(issue("files.numeric_metadata", "File numeric metadata is outside its allowed type or range.", artwork_manifest, manifest=artwork_manifest, json_pointer=f"{pointer}/{field}"))
         if isinstance(file_entry.get("id"), str):
             ids.append(file_entry["id"])
         rel = file_entry.get("relative_path")
@@ -536,8 +617,6 @@ def validate_files(source: OaaSource, result: ValidationResult, files: list[Any]
         if isinstance(rel, str) and "/" in rel:
             # A slash is allowed in relative paths, but traversal/absolute checks still apply.
             problems = archive_path_problems(rel)
-            if rel != rel.strip():
-                problems.append("File relative path contains leading or trailing whitespace.")
         if problems:
             for problem in problems:
                 result.add(issue("files.relative_path_safe", problem, str(rel), manifest=artwork_manifest, json_pointer=f"{pointer}/relative_path"))
@@ -545,6 +624,8 @@ def validate_files(source: OaaSource, result: ValidationResult, files: list[Any]
             resolved = f"{artwork_dir}/{rel}" if artwork_dir else rel
             if archive_path_problems(resolved) or not source.has_file(resolved):
                 result.add(issue("files.relative_path_exists", "Artwork file entry does not resolve to an embedded archive file.", resolved, manifest=artwork_manifest, json_pointer=f"{pointer}/relative_path"))
+            elif file_entry.get("size_bytes") is not None and file_entry["size_bytes"] != source.size(resolved):
+                result.add(issue("files.size_bytes", "size_bytes differs from embedded uncompressed length.", resolved, manifest=artwork_manifest, json_pointer=f"{pointer}/size_bytes"))
         if file_entry.get("is_primary") is True:
             primary_count += 1
         kind = file_entry.get("file_kind")
@@ -565,7 +646,7 @@ def check_media_risk(result: ValidationResult, file_entry: dict[str, Any], manif
     name = str(file_entry.get("relative_path") or file_entry.get("file_name") or "")
     suffix = Path(name).suffix.lower()
     media_type = file_entry.get("media_type")
-    if suffix in HIGH_RISK_EXTENSIONS or media_type in HIGH_RISK_MEDIA_TYPES:
+    if suffix in HIGH_RISK_EXTENSIONS or (isinstance(media_type, str) and media_type in HIGH_RISK_MEDIA_TYPES):
         result.add(issue("security.high_risk_media", "Embedded file type may have active or high-risk behavior.", manifest, manifest=manifest, json_pointer=pointer))
 
 
@@ -581,17 +662,17 @@ def validate_external_links(result: ValidationResult, links: Any, manifest: str,
             result.add(issue("external_links.object", "`external_links[]` entry is not an object.", manifest, manifest=manifest, json_pointer=item_pointer))
             continue
         provider = link.get("provider")
-        if not isinstance(provider, str) or not provider or not PROVIDER_RE.match(provider) or provider.startswith(".") or provider.endswith(".") or ".." in provider:
+        if not isinstance(provider, str) or not provider or not PROVIDER_RE.fullmatch(provider) or provider.startswith(".") or provider.endswith(".") or ".." in provider:
             result.add(issue("external_links.provider", "External link provider identifier violates the OAA provider grammar.", manifest, manifest=manifest, json_pointer=f"{item_pointer}/provider"))
         elif provider not in KNOWN_PROVIDERS:
             result.add(issue("external_links.unknown_provider", "External link provider is unknown and will be treated generically.", manifest, manifest=manifest, json_pointer=f"{item_pointer}/provider"))
         link_id = link.get("id")
-        if not isinstance(link_id, str) or link_id == "":
+        if not isinstance(link_id, str) or not link_id.strip():
             result.add(issue("external_links.id", "External link `id` is missing or empty.", manifest, manifest=manifest, json_pointer=f"{item_pointer}/id"))
         url = link.get("url")
         if not isinstance(url, str):
             result.add(issue("external_links.url", "External link `url` is not a string.", manifest, manifest=manifest, json_pointer=f"{item_pointer}/url", requirement_ids=("OAA-LINK-010",), severity=Severity.FATAL))
-        elif url and not re.match(r"^[A-Za-z][A-Za-z0-9+.-]*://", url):
+        elif url and not absolute_url(url):
             result.add(issue("external_links.url", "External link `url` is non-empty but not absolute.", manifest, manifest=manifest, json_pointer=f"{item_pointer}/url", requirement_ids=("OAA-LINK-007",)))
         validate_extensions(result, link.get("extensions"), manifest, f"{item_pointer}/extensions", link, EXTERNAL_LINK_BASE_FIELDS)
 
@@ -602,16 +683,11 @@ def validate_extensions(result: ValidationResult, extensions: Any, manifest: str
     if not isinstance(extensions, dict):
         result.add(issue("extensions.container_object", "`extensions` value is not an object.", manifest, manifest=manifest, json_pointer=pointer))
         return
-    present_base_fields = {field for field in (base_fields or set()) if parent is not None and field in parent}
     for name, block in extensions.items():
         block_pointer = f"{pointer}/{escape_json_pointer(name)}"
         if not isinstance(block, dict):
             result.add(issue("extensions.block_object", "Extension block value is not an object.", manifest, manifest=manifest, json_pointer=block_pointer))
             continue
-        for field in sorted(set(block) & present_base_fields):
-            result.add(issue("extensions.no_base_field_shadow", f"Extension block field `{field}` shadows a present OAA base field.", manifest, manifest=manifest, json_pointer=f"{block_pointer}/{escape_json_pointer(field)}"))
-        if "extensions" in block:
-            result.add(issue("extensions.no_nested_extensions", "Extension block contains a nested `extensions` container.", manifest, manifest=manifest, json_pointer=block_pointer))
         if name not in KNOWN_EXTENSION_BLOCKS:
             result.add(issue("extensions.unknown_block", "Extension block is unknown and will be ignored for OAA interpretation.", manifest, manifest=manifest, json_pointer=block_pointer))
 
@@ -643,3 +719,28 @@ def json_pointer(parts: Any) -> str:
     if not path:
         return ""
     return "/" + "/".join(escape_json_pointer(str(part)) for part in path)
+
+def absolute_url(value: str) -> bool:
+    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9+.-]*:[A-Za-z0-9._~:/?#\[\]@!$&'()*+,;=%-]+", value):
+        return False
+    if re.search(r"%(?![0-9A-Fa-f]{2})", value) or re.match(r"^[A-Za-z]:[/\\]", value):
+        return False
+    try:
+        parsed = urlsplit(value)
+        if parsed.scheme.lower() == "file":
+            return False
+        if parsed.scheme.lower() in {"http", "https"} and not parsed.hostname:
+            return False
+        # urlsplit separates components but is not a URI syntax validator.
+        pchar = r"[A-Za-z0-9._~!$&'()*+,;=:@%-]"
+        if not re.fullmatch(f"(?:{pchar}|/)*", parsed.path):
+            return False
+        if any(not re.fullmatch(f"(?:{pchar}|[/?])*", part) for part in (parsed.query, parsed.fragment)):
+            return False
+        if parsed.netloc:
+            authority = r"(?:[A-Za-z0-9._~!$&'()*+,;=:%-]*@)?(?:\[[^\]]+\]|[A-Za-z0-9._~!$&'()*+,;=%-]*)(?::[0-9]*)?"
+            if not re.fullmatch(authority, parsed.netloc):
+                return False
+        return True
+    except ValueError:
+        return False

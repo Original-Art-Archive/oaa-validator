@@ -2,21 +2,21 @@
 
 Copyright © 2026 Remgrandt Works.
 
-Remgrandt Works maintains the Original Art Archive (OAA) Format reference validator and licenses the materials in this repository as described below.
+Remgrandt Works maintains this reference validator for the Original Art Archive (OAA) Format and licenses the materials in this repository as described below.
 
 Remgrandt Works is a trade name of Remgrandt Games LLC.
 
-## Specification and Documentation
+## Documentation
 
-Validator documentation and requirements traceability files are licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+Documentation in this repository is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0), unless otherwise stated.
 
 This includes, unless otherwise stated:
 
 - `README.md`
+- `CHANGELOG.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
-- `requirements/*.md`
-- `validator/README.md`
+- `schema/*.md`
 - other human-readable documentation files
 
 SPDX identifier:
@@ -45,18 +45,18 @@ SPDX identifier:
 CC0-1.0
 ```
 
-## Machine-Readable Catalogs and Schemas
+## Machine-Readable Schemas
 
-Machine-readable requirement catalogs and schemas are dedicated to the public domain under CC0 1.0 Universal.
+Machine-readable schema files are dedicated to the public domain under CC0 1.0 Universal.
 
-If a machine-readable catalog or schema file is incorporated into software, it may alternatively be used under the MIT License.
+If a machine-readable schema file is incorporated into software, it may alternatively be used under the MIT License.
 
 This includes, unless otherwise stated:
 
-- `requirements/*.yaml`
 - `schema/*.json`
-- `validator/fixtures/*.json`
-- other machine-readable catalog or fixture metadata files
+- `schema/*.jsonld`
+- `schema/*.schema.json`
+- other machine-readable schema files
 
 SPDX identifiers:
 
@@ -72,7 +72,6 @@ This includes, unless otherwise stated:
 
 - `validator/`
 - `tools/`
-- `scripts/`
 - source code files
 
 SPDX identifier:

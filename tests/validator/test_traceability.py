@@ -9,8 +9,8 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[2]
-CATALOG = ROOT / "requirements" / "oaa-0.1.yaml"
-SCHEMA = ROOT / "schema" / "oaa-manifest.schema.json"
+CATALOG = ROOT / "requirements" / "oaa-1.0.yaml"
+SCHEMA = ROOT / "schema" / "1.0" / "oaa-manifest.schema.json"
 FIXTURE_FILES = [
     ROOT / "validator" / "fixtures" / "valid" / "examples.json",
     ROOT / "validator" / "fixtures" / "invalid" / "cases.json",
@@ -46,7 +46,7 @@ class RequirementTraceabilityTests(unittest.TestCase):
     def test_requirement_catalog_schema_is_valid(self):
         catalog = load_catalog()
         self.assertEqual(catalog["format_version"], 1)
-        self.assertEqual(catalog["spec_version"], "0.1")
+        self.assertEqual(catalog["spec_version"], "1.0")
         ids = set()
         for req in catalog["requirements"]:
             with self.subTest(req=req.get("id")):

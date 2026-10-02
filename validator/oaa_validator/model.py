@@ -54,6 +54,11 @@ class Limits:
     max_entry_size: int = 1024 * 1024 * 1024
     max_manifest_size: int = 10 * 1024 * 1024
     max_json_depth: int = 100
+    max_directory_size: int = 16 * 1024 * 1024
+
+    def __post_init__(self) -> None:
+        if any(type(value) is not int or value <= 0 for value in vars(self).values()):
+            raise ValueError("Resource limits must be positive integers.")
 
 
 @dataclass
@@ -61,10 +66,20 @@ class ValidationResult:
     input: Path
     mode: str
     issues: list[ValidationIssue] = field(default_factory=list)
+    processing_status: str | None = None
+    completed: bool = False
 
     @property
-    def valid(self) -> bool:
-        return not any(issue.severity in {Severity.FATAL, Severity.ERROR} for issue in self.issues)
+    def valid(self) -> bool | None:
+        if any(issue.severity in {Severity.FATAL, Severity.ERROR} for issue in self.issues):
+            return False
+        return None if self.processing_status else True
+
+    @property
+    def status(self) -> str:
+        if self.valid is False:
+            return "invalid"
+        return self.processing_status or "valid"
 
     def add(self, issue: ValidationIssue) -> None:
         self.issues.append(issue)
@@ -83,6 +98,9 @@ class ValidationResult:
             "input": str(self.input),
             "mode": self.mode,
             "valid": self.valid,
+            "status": self.status,
+            "complete": self.completed and self.processing_status is None,
             "summary": self.summary(),
             "issues": [issue.to_dict() for issue in self.issues],
         }
+

@@ -7,3 +7,4 @@ RULES = [
     RuleMetadata("gallery.unique_artwork_ids", "Gallery artwork references are unique", ("OAA-GAL-013",), Severity.FATAL),
     RuleMetadata("gallery.no_mutable_artwork_metadata", "Gallery references do not duplicate artwork metadata", ("OAA-GAL-003",), Severity.FATAL),
 ]
+

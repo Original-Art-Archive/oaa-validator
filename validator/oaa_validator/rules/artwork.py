@@ -7,3 +7,4 @@ RULES = [
     RuleMetadata("artwork.artist_credit_objects", "Artist credit entries are objects", ("OAA-PUB-001",), Severity.FATAL),
     RuleMetadata("artwork.publication_status", "Publication status uses closed base value set", ("OAA-PUB-002",), Severity.FATAL),
 ]
+

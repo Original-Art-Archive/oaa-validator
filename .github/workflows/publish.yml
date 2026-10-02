@@ -62,10 +62,20 @@ jobs:
           python -m build
           python -m twine check dist/*
 
+      - name: Check release tag
+        if: github.event_name == 'release'
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: python -c 'import os, tomllib; from pathlib import Path; assert os.environ["RELEASE_TAG"] == "v" + tomllib.loads(Path("pyproject.toml").read_text())["project"]["version"]'
+
       - name: Smoke test wheel
         run: |
           python -m pip install dist/*.whl
-          oaa-validator validate-dir examples/minimal
+          cd "$RUNNER_TEMP"
+          python -I -m oaa_validator validate-dir "$GITHUB_WORKSPACE/examples/minimal"
+          python -I -m oaa_validator validate-dir "$GITHUB_WORKSPACE/examples/full"
+          python -I -m oaa_validator validate-dir "$GITHUB_WORKSPACE/examples/loc-multi-image"
+          python -I -m oaa_validator validate-dir "$GITHUB_WORKSPACE/examples/public-domain-synthetic"
 
       - name: Upload distribution artifact
         uses: actions/upload-artifact@v4
@@ -77,7 +87,7 @@ jobs:
     name: Publish to PyPI
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
+    if: github.event_name == 'release' && !github.event.release.prerelease
     environment:
       name: pypi
       url: https://pypi.org/p/oaa-validator

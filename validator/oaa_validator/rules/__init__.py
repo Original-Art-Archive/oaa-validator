@@ -27,3 +27,4 @@ def all_rules() -> list[RuleMetadata]:
 
 def rule_map() -> dict[str, RuleMetadata]:
     return {rule.id: rule for rule in all_rules()}
+

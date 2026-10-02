@@ -52,14 +52,14 @@
       "mode": "archive",
       "source": "examples/minimal",
       "zip_patch": "unsupported_non_manifest_compression",
-      "expected_valid": false,
+      "expected_valid": true,
       "expected_findings": [
         {
           "rule_id": "package.compression_method",
           "requirement_ids": [
             "OAA-ZIP-002"
           ],
-          "severity": "fatal"
+          "severity": "warning"
         }
       ]
     },
@@ -150,7 +150,7 @@
       "source": "examples/minimal",
       "extra_archive_entries": [
         {
-          "path": "artworks/OAA-00001/café.txt",
+          "path": "artworks/OAA-00001/cafe\u0301.txt",
           "text": "x"
         }
       ],
@@ -295,7 +295,7 @@
       "mode": "directory",
       "source": "examples/minimal",
       "write_text": {
-        ".oacollection": "{\"schema_version\":\"1.0\",\"schema_version\":\"1.0\",\"name\":\"Example\",\"galleries\":[],\"artworks\":[]}"
+        ".oacollection": "{\"schema_version\":\"0.1\",\"schema_version\":\"0.1\",\"name\":\"Example\",\"galleries\":[],\"artworks\":[]}"
       },
       "expected_valid": false,
       "expected_findings": [
@@ -313,7 +313,7 @@
       "mode": "directory",
       "source": "examples/minimal",
       "write_bytes": {
-        ".oacollection": "EFBBBF7B22736368656D615F76657273696F6E223A22312E30222C226964223A22636F6C6C656374696F6E2D6578616D706C65222C226E616D65223A224578616D706C65222C2267616C6C6572696573223A5B5D2C22617274776F726B73223A5B5D7D"
+        ".oacollection": "EFBBBF7B22736368656D615F76657273696F6E223A22302E31222C226964223A22636F6C6C656374696F6E2D6578616D706C65222C226E616D65223A224578616D706C65222C2267616C6C6572696573223A5B5D2C22617274776F726B73223A5B5D7D"
       },
       "expected_valid": true,
       "expected_findings": [
@@ -357,19 +357,9 @@
           "set": {
             "schema_version": "2.0"
           }
-        },
-        "galleries/Example Gallery/.oagallery": {
-          "set": {
-            "schema_version": "2.0"
-          }
-        },
-        "artworks/OAA-00001/.oaartwork": {
-          "set": {
-            "schema_version": "2.0"
-          }
         }
       },
-      "expected_valid": null,
+      "expected_valid": false,
       "expected_findings": [
         {
           "rule_id": "manifests.schema_version_supported",
@@ -377,7 +367,7 @@
             "OAA-MAN-007",
             "OAA-MAN-009"
           ],
-          "severity": "info"
+          "severity": "fatal"
         }
       ]
     },
@@ -400,14 +390,14 @@
             "OAA-MAN-007",
             "OAA-MAN-009"
           ],
-          "severity": "info"
+          "severity": "fatal"
         },
         {
           "rule_id": "manifests.same_schema_versions",
           "requirement_ids": [
             "OAA-MAN-008"
           ],
-          "severity": "fatal"
+          "severity": "warning"
         }
       ]
     },
@@ -494,9 +484,10 @@
       "expected_valid": false,
       "expected_findings": [
         {
-          "rule_id": "collection.gallery_manifest_present",
+          "rule_id": "paths.manifest_path_safe",
           "requirement_ids": [
-            "OAA-GAL-001"
+            "OAA-MAN-015",
+            "OAA-COL-016"
           ],
           "severity": "fatal"
         }
@@ -519,9 +510,10 @@
       "expected_valid": false,
       "expected_findings": [
         {
-          "rule_id": "collection.artwork_manifest_present",
+          "rule_id": "paths.manifest_path_safe",
           "requirement_ids": [
-            "OAA-ART-001"
+            "OAA-MAN-015",
+            "OAA-COL-020"
           ],
           "severity": "fatal"
         }
@@ -1076,14 +1068,14 @@
           "value": "/relative"
         }
       },
-      "expected_valid": false,
+      "expected_valid": true,
       "expected_findings": [
         {
           "rule_id": "external_links.url",
           "requirement_ids": [
             "OAA-LINK-007"
           ],
-          "severity": "fatal"
+          "severity": "warning"
         }
       ]
     },
@@ -1232,8 +1224,16 @@
           "value": "CAF Member Art"
         }
       },
-      "expected_valid": true,
-      "expected_findings": []
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "extensions.no_base_field_shadow",
+          "requirement_ids": [
+            "OAA-EXT-006"
+          ],
+          "severity": "fatal"
+        }
+      ]
     },
     {
       "id": "missing-embedded-file",
@@ -1432,8 +1432,16 @@
           }
         }
       },
-      "expected_valid": true,
-      "expected_findings": []
+      "expected_valid": false,
+      "expected_findings": [
+        {
+          "rule_id": "extensions.no_nested_extensions",
+          "requirement_ids": [
+            "OAA-EXT-003"
+          ],
+          "severity": "fatal"
+        }
+      ]
     },
     {
       "id": "unknown-extension-block",
@@ -1474,14 +1482,14 @@
           }
         }
       },
-      "expected_valid": true,
+      "expected_valid": false,
       "expected_findings": [
         {
           "rule_id": "security.local_path_in_manifest",
           "requirement_ids": [
             "OAA-SEC-004"
           ],
-          "severity": "warning"
+          "severity": "fatal"
         }
       ]
     },
@@ -1498,14 +1506,14 @@
           }
         }
       },
-      "expected_valid": true,
+      "expected_valid": false,
       "expected_findings": [
         {
           "rule_id": "security.local_path_in_manifest",
           "requirement_ids": [
             "OAA-SEC-004"
           ],
-          "severity": "warning"
+          "severity": "fatal"
         }
       ]
     },
@@ -1548,206 +1556,12 @@
       "limits": {
         "max_entries": 1
       },
-      "expected_valid": null,
+      "expected_valid": false,
       "expected_findings": [
         {
           "rule_id": "security.resource_limits",
           "requirement_ids": [
             "OAA-SEC-007"
-          ],
-          "severity": "info"
-        }
-      ]
-    },
-    {
-      "id": "size-bytes-mismatch",
-      "mode": "directory",
-      "source": "examples/full",
-      "json_updates": {
-        "artworks/OAA-00044/.oaartwork": {
-          "set_path": [
-            "files",
-            0,
-            "size_bytes"
-          ],
-          "value": 1
-        }
-      },
-      "expected_valid": false,
-      "expected_findings": [
-        {
-          "rule_id": "files.size_bytes",
-          "requirement_ids": [
-            "OAA-FILE-020"
-          ],
-          "severity": "fatal"
-        }
-      ]
-    },
-    {
-      "id": "invalid-calendar-date",
-      "mode": "directory",
-      "source": "examples/full",
-      "json_updates": {
-        "artworks/OAA-00044/.oaartwork": {
-          "set_path": [
-            "private_metadata",
-            "purchase_date"
-          ],
-          "value": "2025-02-29"
-        }
-      },
-      "expected_valid": false,
-      "expected_findings": [
-        {
-          "rule_id": "manifests.calendar_date",
-          "requirement_ids": [
-            "OAA-MAN-017"
-          ],
-          "severity": "fatal"
-        }
-      ]
-    },
-    {
-      "id": "file-directory-conflict",
-      "mode": "archive",
-      "source": "examples/minimal",
-      "extra_archive_entries": [
-        {
-          "path": "artworks",
-          "text": "conflict"
-        }
-      ],
-      "expected_valid": false,
-      "expected_findings": [
-        {
-          "rule_id": "package.path_conflict",
-          "requirement_ids": [
-            "OAA-ZIP-005"
-          ],
-          "severity": "fatal"
-        }
-      ]
-    },
-    {
-      "id": "symlink-entry",
-      "mode": "archive",
-      "source": "examples/minimal",
-      "extra_archive_entries": [
-        {
-          "path": "link",
-          "text": "../outside",
-          "unix_mode": 41471
-        }
-      ],
-      "expected_valid": false,
-      "expected_findings": [
-        {
-          "rule_id": "package.entry_type",
-          "requirement_ids": [
-            "OAA-ZIP-004"
-          ],
-          "severity": "fatal"
-        }
-      ]
-    },
-    {
-      "id": "negative-pixel-width",
-      "mode": "directory",
-      "source": "examples/full",
-      "json_updates": {
-        "artworks/OAA-00044/.oaartwork": {
-          "set_path": [
-            "files",
-            0,
-            "width"
-          ],
-          "value": -1
-        }
-      },
-      "expected_valid": false,
-      "expected_findings": [
-        {
-          "rule_id": "manifests.field_type",
-          "requirement_ids": [
-            "OAA-MAN-016"
-          ],
-          "severity": "fatal"
-        },
-        {
-          "rule_id": "files.numeric_metadata",
-          "requirement_ids": [
-            "OAA-FILE-021"
-          ],
-          "severity": "fatal"
-        }
-      ],
-      "covers_requirements": [
-        "OAA-FILE-021"
-      ]
-    },
-    {
-      "id": "unavailable-input",
-      "kind": "missing_input",
-      "mode": "directory",
-      "expected_valid": null,
-      "expected_findings": [
-        {
-          "rule_id": "security.input_unavailable",
-          "requirement_ids": [
-            "OAA-SEC-008"
-          ],
-          "severity": "info"
-        }
-      ]
-    },
-    {
-      "id": "unsafe-gallery-manifest-reference",
-      "mode": "directory",
-      "source": "examples/minimal",
-      "json_updates": {
-        ".oacollection": {
-          "set_path": [
-            "galleries",
-            0,
-            "path"
-          ],
-          "value": "../outside"
-        }
-      },
-      "expected_valid": false,
-      "expected_findings": [
-        {
-          "rule_id": "paths.manifest_path_safe",
-          "requirement_ids": [
-            "OAA-MAN-015",
-            "OAA-COL-016"
-          ],
-          "severity": "fatal"
-        }
-      ]
-    },
-    {
-      "id": "unsafe-artwork-manifest-reference",
-      "mode": "directory",
-      "source": "examples/minimal",
-      "json_updates": {
-        ".oacollection": {
-          "set_path": [
-            "artworks",
-            0,
-            "path"
-          ],
-          "value": "../outside"
-        }
-      },
-      "expected_valid": false,
-      "expected_findings": [
-        {
-          "rule_id": "paths.manifest_path_safe",
-          "requirement_ids": [
-            "OAA-MAN-015",
-            "OAA-COL-020"
           ],
           "severity": "fatal"
         }
